@@ -1,0 +1,128 @@
+package net.htlgkr.skywatcher.viewthesky;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+
+import java.util.List;
+
+public class CanvasView extends View {
+    private List<Planet> planets;
+    private double phoneAzimuth = 0.0;
+    private double phonePitch = 0.0;
+    private OnDrawCallback onDrawCallback;
+
+    public CanvasView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public void setOnDrawCallback(OnDrawCallback callback) {
+        this.onDrawCallback = callback;
+    }
+
+    public void updateVisiblePlanets(List<Planet> planets) {
+        this.planets = planets;
+        invalidate(); // Damit der View neu gezeichnet wird
+        Log.d("CanvasView", "(updateVisiblePlanets) Planeten aktualisiert: " + planets.size());
+    }
+
+    public void updateOrientation(double azimuth, double pitch) {
+        this.phoneAzimuth = azimuth;
+        this.phonePitch = pitch;
+//        invalidate(); // Damit der View neu gezeichnet wird
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+
+
+//        Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.mercury);
+//        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
+//
+//        float centerX = (float) getWidth() / 2 - scaledBitmap.getWidth() / 2;
+//        float centerY = (float) getHeight() / 2 - scaledBitmap.getHeight() / 2;
+//
+//// Bitmap zeichnen, sodass es zentriert ist
+//        canvas.drawBitmap(scaledBitmap, centerX, centerY, null);
+
+
+        // Zeichne Planeten, falls verfügbar
+        if (planets != null && !planets.isEmpty()) {
+            Log.d("CanvasView", "Zeichne " + planets.size() + " Planeten.");
+            drawPlanets(canvas, planets, phoneAzimuth, phonePitch);
+        } else {
+            Log.d("CanvasView", "Keine Planeten zum Zeichnen.");
+        }
+
+        // Rufe den OnDrawCallback auf, falls gesetzt
+        if (onDrawCallback != null) {
+            onDrawCallback.onDraw(canvas);
+        }
+    }
+
+    public void drawPlanets(Canvas canvas, List<Planet> visiblePlanets, double phoneAzimuth, double phonePitch) {
+
+        if (visiblePlanets != null && !visiblePlanets.isEmpty()) {
+            // Bildschirmgröße für die Darstellung auf der Canvas holen
+            int canvasWidth = canvas.getWidth();
+            int canvasHeight = canvas.getHeight();
+
+            // Ein Puffer, um Planeten auch teilweise außerhalb der Grenzen anzuzeigen
+            int margin = 50;  // Anzahl der Pixel, um die der Planet außerhalb des sichtbaren Bereichs erscheinen kann
+
+            for (Planet planet : visiblePlanets) {
+                // Berechne die Differenzen zwischen Planeten-Azimut, Elevation und den aktuellen Ausrichtungen des Handys
+                double azimuthOffset = planet.getAzimuth() - phoneAzimuth;  // Differenz zwischen Planeten-Azimut und Handy-Azimut
+                double elevationOffset = planet.getElevation() - phonePitch;  // Differenz zwischen Planeten-Elevation und Handy-Elevation
+
+                // Nur Planeten zeichnen, wenn ihre Elevation positiv ist (über dem Horizont)
+                if (elevationOffset > 0) {
+                    // Normierung der Azimuth- und Elevation-Werte auf den Bildschirmbereich
+                    float x = (float) (canvasWidth / 2 + azimuthOffset * (canvasWidth / 360));  // X-Position auf der Canvas
+                    float y = (float) (canvasHeight / 2 - elevationOffset * (canvasHeight / 180));  // Y-Position auf der Canvas
+
+                    // Sicherstellen, dass die Koordinaten innerhalb des Canvas-Bereichs liegen, auch teilweise außerhalb
+                    x = Math.max(-margin, Math.min(canvasWidth + margin, x)); // Planeten können leicht außerhalb des sichtbaren Bereichs erscheinen
+                    y = Math.max(-margin, Math.min(canvasHeight + margin, y)); // Planeten können leicht außerhalb des sichtbaren Bereichs erscheinen
+
+                    // Zeichne den Planeten (Bitmap)
+                    Bitmap planetBitmap = planet.bitmap;
+                    if (planetBitmap != null) {
+                        // Skaliere das Bild auf eine bestimmte Größe (z.B. 50x50 Pixel)
+                        int planetSize = 300;
+                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(planetBitmap, planetSize, planetSize, true);
+
+                        // Zeichne die Bitmap mit einer Verschiebung, sodass sie teilweise außerhalb sichtbar ist
+                        canvas.drawBitmap(scaledBitmap, x - planetSize / 2, y - planetSize / 2, null); // Planet mittig an den berechneten Koordinaten zeichnen
+                    }
+                }
+            }
+        }
+    }
+
+
+//    public static boolean isPlanetVisible(double planetAzimuth, double planetElevation, float deviceAzimuth, float devicePitch) {
+//        // Definiere eine Toleranz für den Azimut und die Elevation
+//        double azimuthTolerance = 10.0; // +-10 Grad für den Azimut
+//        double elevationTolerance = 10.0; // +-10 Grad für die Elevation
+//
+//        // Überprüfe, ob der Azimut des Planeten im Bereich des Geräteazimuts liegt
+//        boolean azimuthInRange = Math.abs(planetAzimuth - deviceAzimuth) < azimuthTolerance;
+//
+//        // Überprüfe, ob die Elevation des Planeten im Bereich der Geräte-Neigung liegt
+//        boolean elevationInRange = Math.abs(planetElevation - devicePitch) < elevationTolerance;
+//
+//        return azimuthInRange && elevationInRange;
+//    }
+
+
+    public interface OnDrawCallback {
+        void onDraw(Canvas canvas);
+    }
+}
+

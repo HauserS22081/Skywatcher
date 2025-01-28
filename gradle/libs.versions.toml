@@ -1,0 +1,47 @@
+[versions]
+agp = "8.6.0"
+arsceneview = "2.2.1"
+cardview = "1.0.0"
+comGoogleArCore2 = "1.48.0"
+coreVersion = "1.17.1"
+gsonVersion = "2.10.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
+material = "1.12.0"
+activity = "1.9.3"
+constraintlayout = "2.2.0"
+legacySupportV4 = "1.0.0"
+recyclerview = "1.3.2"
+retrofitVersion = "2.9.0"
+sceneformUx = "1.17.1"
+sceneview = "2.2.1"
+volley = "1.2.1"
+roomCompiler = "2.6.1"
+
+[libraries]
+cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
+com-google-ar-core3 = { module = "com.google.ar:core", version.ref = "comGoogleArCore2" }
+google-gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
+recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+retrofit2-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+sceneform-core = { module = "com.google.ar.sceneform:core", version.ref = "coreVersion" }
+sceneform-ux = { module = "com.google.ar.sceneform.ux:sceneform-ux", version.ref = "sceneformUx" }
+sceneview = { module = "io.github.sceneview:sceneview", version.ref = "sceneview" }
+sceneview-arsceneview = { module = "io.github.sceneview:arsceneview", version.ref = "arsceneview" }
+squareup-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofitVersion" }
+volley = { module = "com.android.volley:volley", version.ref = "volley" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+
