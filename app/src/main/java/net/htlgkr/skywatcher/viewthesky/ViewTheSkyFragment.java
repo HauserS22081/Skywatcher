@@ -223,7 +223,43 @@ public class ViewTheSkyFragment extends Fragment {
 //        return visiblePlanets;
 //    }
 
-    public static boolean isPlanetVisible(Planet planet, double deviceAzimuth, double devicePitch, double observerLatitude, double observerLongitude) {
+    public static boolean isPlanetVisible(Planet planet, double deviceAzimuth, double devicePitch,
+                                          double observerLatitude, double observerLongitude) {
+        // Konvertiere RA und DEC in Azimut und Elevation relativ zum Beobachter
+        double planetAzimuth = Converter.calculateAzimuth(planet, observerLatitude, observerLongitude);
+        double planetElevation = Converter.calculateElevation(planet, observerLatitude, observerLongitude);
+
+        // Definiere eine Toleranz für Azimut und Elevation
+        double azimuthTolerance = 30.0;  // +-30 Grad für den Azimut (erhöht für sanftere Übergänge)
+        double elevationTolerance = 30.0;  // +-30 Grad für die Elevation (erhöht für sanftere Übergänge)
+
+        // Berechne den Azimutbereich des Geräts
+        double azimuthRangeStart = deviceAzimuth - azimuthTolerance;  // +-Toleranz nach links
+        double azimuthRangeEnd = deviceAzimuth + azimuthTolerance;    // +-Toleranz nach rechts
+
+        // Berechne den Pitchbereich des Geräts
+        double pitchRangeStart = devicePitch - elevationTolerance;  // +-Toleranz nach unten
+        double pitchRangeEnd = devicePitch + elevationTolerance;    // +-Toleranz nach oben
+
+        // Passe Azimut an, um Werte zwischen 0 und 360 zu berücksichtigen
+        if (azimuthRangeStart < 0) azimuthRangeStart += 360;
+        if (azimuthRangeEnd >= 360) azimuthRangeEnd -= 360;
+
+        // Überprüfe, ob der Planet im Bereich des Geräts liegt
+        boolean isInAzimuthRange = (planetAzimuth >= azimuthRangeStart && planetAzimuth <= azimuthRangeEnd) ||
+                (azimuthRangeStart > azimuthRangeEnd && (planetAzimuth >= azimuthRangeStart || planetAzimuth <= azimuthRangeEnd));
+        boolean isInPitchRange = planetElevation >= pitchRangeStart && planetElevation <= pitchRangeEnd;
+
+        // Überprüfe, ob der Planet innerhalb der Toleranz des Azimuts und der Elevation liegt
+        boolean isAzimuthInRange = Math.abs(planetAzimuth - deviceAzimuth) <= azimuthTolerance;
+        boolean isElevationInRange = Math.abs(planetElevation - devicePitch) <= elevationTolerance;
+
+        // Der Planet ist sichtbar, wenn er in beiden Bereichen liegt
+        return isInAzimuthRange && isInPitchRange && isAzimuthInRange && isElevationInRange;
+    }
+
+
+    public static boolean isPlanetVisibleOLD(Planet planet, double deviceAzimuth, double devicePitch, double observerLatitude, double observerLongitude) {
         // Konvertiere RA und DEC in Azimut und Elevation relativ zum Beobachter
         double planetAzimuth = Converter.calculateAzimuth(planet, observerLatitude, observerLongitude);
         double planetElevation = Converter.calculateElevation(planet, observerLatitude, observerLongitude);
@@ -270,6 +306,23 @@ public class ViewTheSkyFragment extends Fragment {
         }
 
         return visiblePlanets;
+    }
+
+    public void updateVisiblePlanets(List<Planet> allPlanets,
+                                     double phoneAzimuth, double phonePitch,
+                                     double observerLatitude, double observerLongitude) {
+        // Erstelle eine leere Liste für sichtbare Planeten
+        List<Planet> visiblePlanets = new ArrayList<>();
+
+        // Gehe durch alle Planeten und überprüfe, ob sie sichtbar sind
+        for (Planet planet : allPlanets) {
+            if (isPlanetVisible(planet, phoneAzimuth, phonePitch, observerLatitude, observerLongitude)) {
+                visiblePlanets.add(planet);
+            }
+        }
+
+        // Aktualisiere die globale Liste der sichtbaren Planeten
+        this.visiblePlanets = visiblePlanets;
     }
 
 

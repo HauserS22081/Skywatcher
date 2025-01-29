@@ -55,7 +55,7 @@ public class CanvasView extends View {
         // Zeichne Planeten, falls verfügbar
         if (planets != null && !planets.isEmpty()) {
             Log.d("CanvasView", "Zeichne " + planets.size() + " Planeten.");
-            drawPlanets(canvas, planets, phoneAzimuth, phonePitch);
+            drawPlanets(canvas, planets);
         } else {
             Log.d("CanvasView", "Keine Planeten zum Zeichnen.");
         }
@@ -108,7 +108,48 @@ public class CanvasView extends View {
 //        }
 //    }
 
-    public void drawPlanets(Canvas canvas, List<Planet> visiblePlanets,
+    public void drawPlanets(Canvas canvas, List<Planet> visiblePlanets) {
+        if (visiblePlanets == null || visiblePlanets.isEmpty()) return;
+
+        // Bildschirmgröße holen
+        int canvasWidth = canvas.getWidth();
+        int canvasHeight = canvas.getHeight();
+
+        // Zeichne alle sichtbaren Planeten
+        for (Planet planet : visiblePlanets) {
+            // Berechne Differenz zwischen Planeten- und Handy-Orientierung
+            float azimuthDiff = (float) (planet.getAzimuth() - phoneAzimuth);
+            float elevationDiff = (float) (planet.getElevation() - phonePitch);
+
+            // Azimut-Werte normalisieren (damit -180° und 180° dasselbe sind)
+            if (azimuthDiff > 180) azimuthDiff -= 360;
+            if (azimuthDiff < -180) azimuthDiff += 360;
+
+            // Position auf dem Bildschirm berechnen (sanfte Übergänge)
+            float x = (azimuthDiff / 60.0f) * canvasWidth / 2 + canvasWidth / 2;
+            float y = canvasHeight - ((elevationDiff / 30.0f) * canvasHeight / 2 + canvasHeight / 2);
+
+            // Begrenzung der Werte (damit Planeten am Rand bleiben)
+            x = Math.max(0, Math.min(canvasWidth, x));
+            y = Math.max(0, Math.min(canvasHeight, y));
+
+            // Planeten-Bitmap holen
+            Bitmap planetBitmap = planet.bitmap;
+            if (planetBitmap != null) {
+                int planetSize = 300; // Konstante Größe für alle Planeten
+                RectF destRect = new RectF(
+                        x - planetSize / 2, y - planetSize / 2,
+                        x + planetSize / 2, y + planetSize / 2
+                );
+
+                // Zeichne die Bitmap an der berechneten Position
+                canvas.drawBitmap(planetBitmap, null, destRect, null);
+            }
+        }
+    }
+
+
+    public void drawPlanetsOLD(Canvas canvas, List<Planet> visiblePlanets,
                             double phoneAzimuth, double phonePitch) {
 
         if (visiblePlanets == null || visiblePlanets.isEmpty()) return;
