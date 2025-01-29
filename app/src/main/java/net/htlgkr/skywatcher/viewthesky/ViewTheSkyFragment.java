@@ -223,7 +223,58 @@ public class ViewTheSkyFragment extends Fragment {
 //        return visiblePlanets;
 //    }
 
+    public static boolean isPlanetVisible(Planet planet, double deviceAzimuth, double devicePitch, double observerLatitude, double observerLongitude) {
+        // Konvertiere RA und DEC in Azimut und Elevation relativ zum Beobachter
+        double planetAzimuth = Converter.calculateAzimuth(planet, observerLatitude, observerLongitude);
+        double planetElevation = Converter.calculateElevation(planet, observerLatitude, observerLongitude);
+        // -> kann man eigentlich 1 mal machen
+        // Mit den Funktionen Converter.calculateAzimuthFromRADEC() und Converter.calculateElevationFromRADEC() werden die Rektaszension (RA) und Deklination (DEC) des Planeten relativ zum Beobachter (Benutzerstandort) in Azimut und Elevation umgerechnet.
+
+        // Definiere eine Toleranz für Azimut und Elevation
+        double azimuthTolerance = 10.0;  // +-10 Grad für den Azimut
+        double elevationTolerance = 10.0;  // +-10 Grad für die Elevation
+
+        // Berechne den Azimutbereich des Geräts
+        double azimuthRangeStart = deviceAzimuth - 30;  // 30° nach links
+        double azimuthRangeEnd = deviceAzimuth + 30;    // 30° nach rechts
+
+        // Berechne den Pitchbereich des Geräts
+        double pitchRangeStart = devicePitch - 15;  // 15° nach unten
+        double pitchRangeEnd = devicePitch + 15;    // 15° nach oben
+
+        // Passe Azimut an, um Werte zwischen 0 und 360 zu berücksichtigen
+        if (azimuthRangeStart < 0) azimuthRangeStart += 360;
+        if (azimuthRangeEnd >= 360) azimuthRangeEnd -= 360;
+
+        // Überprüfe, ob der Planet im Bereich des Geräts liegt
+        boolean isInAzimuthRange = (planetAzimuth >= azimuthRangeStart && planetAzimuth <= azimuthRangeEnd) ||
+                (azimuthRangeStart > azimuthRangeEnd && (planetAzimuth >= azimuthRangeStart || planetAzimuth <= azimuthRangeEnd));
+        boolean isInPitchRange = planetElevation >= pitchRangeStart && planetElevation <= pitchRangeEnd;
+
+        // Überprüfe, ob der Planet innerhalb der Toleranz des Azimuts und der Elevation liegt
+        boolean isAzimuthInRange = Math.abs(planetAzimuth - deviceAzimuth) <= azimuthTolerance;
+        boolean isElevationInRange = Math.abs(planetElevation - devicePitch) <= elevationTolerance;
+
+        return isInAzimuthRange && isInPitchRange && isAzimuthInRange && isElevationInRange;
+    }
+
     private List<Planet> calculatePlanetsForLocation() {
+        List<Planet> visiblePlanets = new ArrayList<>();
+
+        for (Planet planet : planets) {
+
+            if (isPlanetVisible(planet, phoneAzimuth, phonePitch, observerLatitude, observerLongitude)) {
+                visiblePlanets.add(planet);
+            }
+
+        }
+
+        return visiblePlanets;
+    }
+
+
+
+    /*private List<Planet> calculatePlanetsForLocation() {
 
         // 1. Berechne für jeden Planeten die Position relativ zum Benutzer (Azimut und Elevation).
         // 2. Die Position zeigt an, wo der Planet vom Benutzerstandpunkt aus im Raum ist.
@@ -266,7 +317,7 @@ public class ViewTheSkyFragment extends Fragment {
         }
 
         return visiblePlanets;
-    }
+    }*/
 
 
     // This method updates the planet's position and prepares it for display on a canvas (in your case, adding it as a bitmap)
