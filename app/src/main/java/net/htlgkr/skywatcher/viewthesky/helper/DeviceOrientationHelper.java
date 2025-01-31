@@ -15,10 +15,8 @@ public class DeviceOrientationHelper implements SensorEventListener {
     private Sensor magnetometer;
     private float[] gravity;
     private float[] geomagnetic;
-    private double azimuth;
     private double pitch;
-
-
+    private double roll;
 
     private OnOrientationChangedListener listener;
 
@@ -51,23 +49,18 @@ public class DeviceOrientationHelper implements SensorEventListener {
             float[] I = new float[9];
             boolean success = SensorManager.getRotationMatrix(R, I, gravity, geomagnetic);
             if (success) {
-
                 float[] orientation = new float[3];
                 SensorManager.getOrientation(R, orientation);
 
-                double tempAzimuth = Math.toDegrees(orientation[0]);
                 double tempPitch = Math.toDegrees(orientation[1]);
+                double tempRoll = Math.toDegrees(orientation[2]);
 
-                if (Math.abs(azimuth - tempAzimuth) > THRESHOLD && Math.abs(pitch - tempPitch) > THRESHOLD) {
-
-                    // Azimut ist die Richtung des Geräts in Bezug auf Norden
-                    azimuth = tempAzimuth;
+                if (Math.abs(pitch - tempPitch) > THRESHOLD || Math.abs(roll - tempRoll) > THRESHOLD) {
                     pitch = tempPitch;
+                    roll = tempRoll;
 
-                    // Gib die Werte weiter
-                    listener.onOrientationChanged(azimuth, pitch);
+                    listener.onOrientationChanged(pitch, roll);
                 }
-
             }
         }
     }
@@ -78,6 +71,6 @@ public class DeviceOrientationHelper implements SensorEventListener {
     }
 
     public interface OnOrientationChangedListener {
-        void onOrientationChanged(double azimuth, double pitch);
+        void onOrientationChanged(double pitch, double roll);
     }
 }

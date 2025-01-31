@@ -228,6 +228,8 @@ public class ViewTheSkyFragment extends Fragment {
 //        return visiblePlanets;
 //    }
 
+
+
     public static boolean isPlanetVisible(Planet planet, double deviceAzimuth, double devicePitch,
                                           double observerLatitude, double observerLongitude, double screenWidth, double screenHeight) {
 

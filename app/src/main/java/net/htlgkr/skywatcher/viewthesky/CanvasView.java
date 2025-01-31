@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CanvasView extends View {
     private List<Planet> planets;
-    private double phoneAzimuth = 0.0;
+    private double phoneRoll = 0.0;
     private double phonePitch = 0.0;
     private OnDrawCallback onDrawCallback;
 
@@ -31,7 +31,7 @@ public class CanvasView extends View {
     }
 
     public void updateOrientation(double azimuth, double pitch) {
-        this.phoneAzimuth = azimuth;
+        this.phoneRoll = azimuth;
         this.phonePitch = pitch;
 //        invalidate(); // Damit der View neu gezeichnet wird
     }
@@ -82,7 +82,7 @@ public class CanvasView extends View {
 
                 //if (isVisible) {
                     // Berechne die Differenzen zwischen Planeten-Azimut, Elevation und den aktuellen Ausrichtungen des Handys
-                    double azimuthOffset = planet.getAzimuth() - phoneAzimuth;  // Differenz zwischen Planeten-Azimut und Handy-Azimut
+                    double azimuthOffset = planet.getAzimuth() - phoneRoll;  // Differenz zwischen Planeten-Azimut und Handy-Azimut
                     double elevationOffset = planet.getElevation() - phonePitch;  // Differenz zwischen Planeten-Elevation und Handy-Elevation
 
                     // Berechne Azimut- und Elevationswerte für den Bildschirm
@@ -121,7 +121,7 @@ public class CanvasView extends View {
 
             for (Planet planet : visiblePlanets) {
                 // Berechne die Differenzen zwischen Planeten-Azimut, Elevation und den aktuellen Ausrichtungen des Handys
-                double azimuthOffset = planet.getAzimuth() - phoneAzimuth;  // Differenz zwischen Planeten-Azimut und Handy-Azimut
+                double azimuthOffset = planet.getAzimuth() - phoneRoll;  // Differenz zwischen Planeten-Azimut und Handy-Azimut
                 double elevationOffset = planet.getElevation() - phonePitch;  // Differenz zwischen Planeten-Elevation und Handy-Elevation
 
 
@@ -161,7 +161,7 @@ public class CanvasView extends View {
         // Zeichne alle sichtbaren Planeten
         for (Planet planet : visiblePlanets) {
             // Berechne Differenz zwischen Planeten- und Handy-Orientierung
-            float azimuthDiff = (float) (planet.getAzimuth() - phoneAzimuth);
+            float azimuthDiff = (float) (planet.getAzimuth() - phoneRoll);
             float elevationDiff = (float) (planet.getElevation() - phonePitch);
 
             // Azimut-Werte normalisieren (damit -180° und 180° dasselbe sind)
@@ -202,7 +202,7 @@ public class CanvasView extends View {
 
         for (Planet planet : visiblePlanets) {
             // Berechne Differenz zwischen Planeten- und Handy-Orientierung
-            float azimuthDiff = (float) (planet.getAzimuth() - phoneAzimuth);
+            float azimuthDiff = (float) (planet.getAzimuth() - phoneRoll);
             float elevationDiff = (float) (planet.getElevation() - phonePitch);
 
             // Azimut-Werte normalisieren (damit -180° und 180° dasselbe sind)
