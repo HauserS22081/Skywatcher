@@ -124,6 +124,8 @@ public class ViewTheSkyFragment extends Fragment {
 
                     for (int i = 0; i < planets.size(); i++) {
                         Planet planet = PlanetPositionCalculator.calculateRAandDec(planets.get(i), observerLongitude);
+                        planet.setAzimuth(Converter.calculateAzimuth(planet, observerLatitude, observerLongitude));
+                        planet.setElevation(Converter.calculateElevation(planet, observerLatitude, observerLongitude));
                         planets.set(i, planet);
                     }
 
@@ -169,7 +171,7 @@ public class ViewTheSkyFragment extends Fragment {
         Log.d("loadPlanets", "Roll: "+ phoneRoll);
         Log.d("loadPlanets", "Pitch: "+ phonePitch);
 
-        canvasView.updateVisiblePlanets(visiblePlanets);
+        canvasView.updateVisiblePlanets(planets);
     }
 
     public static boolean isPlanetVisible(Planet planet, double deviceRoll, double devicePitch,

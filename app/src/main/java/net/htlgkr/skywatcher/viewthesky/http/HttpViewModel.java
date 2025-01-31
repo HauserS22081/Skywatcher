@@ -16,6 +16,7 @@ import com.android.volley.toolbox.Volley;
 
 import net.htlgkr.skywatcher.R;
 import net.htlgkr.skywatcher.viewthesky.Planet;
+import net.htlgkr.skywatcher.viewthesky.helper.Converter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

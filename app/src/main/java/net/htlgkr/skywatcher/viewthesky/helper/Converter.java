@@ -24,7 +24,7 @@ public class Converter {
 //    }
 
         // Methode, um den Azimuth des Planeten zu berechnen
-    public static double calculateAzimuth(Planet planet, double observerLatitude, double observerLongitude) {
+    public static float calculateAzimuth(Planet planet, double observerLatitude, double observerLongitude) {
         // Der Azimuth ist der Winkel entlang des Horizonts (Nord-Süd-Achse)
         // Der Azimuth wird normalerweise im Bereich 0° bis 360° gemessen, wobei 0° Norden und 90° Osten ist.
 
@@ -57,11 +57,11 @@ public class Converter {
         // Elevation in Grad umwandeln
         elevation = Math.toDegrees(elevation);
 
-        return azimuth;
+        return (float) azimuth;
     }
 
     // Methode, um die Elevation des Planeten zu berechnen
-    public static double calculateElevation(Planet planet, double observerLatitude, double observerLongitude) {
+    public static float calculateElevation(Planet planet, double observerLatitude, double observerLongitude) {
         // Der Elevationswinkel gibt an, wie hoch der Planet am Himmel über dem Horizont ist
         double ra = Math.toRadians(planet.getRa()); // Umwandlung von RA in Bogenmaß
         double dec = Math.toRadians(planet.getDec()); // Umwandlung von Dec in Bogenmaß
@@ -81,7 +81,7 @@ public class Converter {
         double elevation = Math.asin(sinElevation); // Elevation berechnen in Bogenmaß
         elevation = Math.toDegrees(elevation); // Umwandlung der Elevation in Grad
 
-        return elevation;
+        return (float) elevation;
     }
 
 

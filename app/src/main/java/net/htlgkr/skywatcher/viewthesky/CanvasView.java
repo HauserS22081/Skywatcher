@@ -15,6 +15,8 @@ public class CanvasView extends View {
     private double phoneRoll = 0.0;
     private double phonePitch = 0.0;
     private OnDrawCallback onDrawCallback;
+    private double phoneAzimuth = 0.0;
+    private double phoneElevation = 0.0;
 
     public CanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -33,6 +35,11 @@ public class CanvasView extends View {
     public void updateOrientation(double roll, double pitch) {
         this.phoneRoll = roll;
         this.phonePitch = pitch;
+
+        // Berechne Azimut und Elevation des Geräts
+        double[] deviceAzimuthElevation = calculateDeviceAzimuthElevation(phoneRoll, phonePitch);
+        this.phoneAzimuth = deviceAzimuthElevation[0];
+        this.phoneElevation = deviceAzimuthElevation[1];
 //        invalidate(); // Damit der View neu gezeichnet wird
     }
 
@@ -67,6 +74,68 @@ public class CanvasView extends View {
     }
 
     public void drawPlanets(Canvas canvas, List<Planet> visiblePlanets) {
+        int canvasWidth = canvas.getWidth();
+        int canvasHeight = canvas.getHeight();
+
+        for (Planet planet : visiblePlanets) {
+            // Berechne den Unterschied zwischen dem Planeten und der Geräteaustrichtung (Azimut und Elevation)
+            double azimuthDifference = planet.getAzimuth() - phoneAzimuth;
+            double elevationDifference = planet.getElevation() - phoneElevation;
+
+            // Mappen der Azimut- und Elevationsdifferenz auf 2D-Bildschirmkoordinaten
+            float x = (float) ((azimuthDifference + 180) / 360 * canvasWidth);  // Azimut in X umrechnen
+            float y = (float) ((elevationDifference + 90) / 180 * canvasHeight);  // Elevation in Y umrechnen
+
+            // Berechne Toleranz, sodass der Planet auch bei kleinen Änderungen von Pitch/Roll sichtbar bleibt
+            int planetSize = 100;  // Größe des Planeten auf dem Bildschirm
+            int margin = 50;  // Spielraum für Planeten außerhalb des sichtbaren Bereichs
+
+            // Zeichne den Planeten (Bitmap)
+            Bitmap planetBitmap = planet.bitmap;
+            if (planetBitmap != null) {
+                // Skaliere das Bild auf eine bestimmte Größe
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(planetBitmap, planetSize, planetSize, true);
+
+                // Stelle sicher, dass der Planet innerhalb des sichtbaren Bereichs liegt
+                x = Math.max(-margin, Math.min(canvasWidth + margin, x));
+                y = Math.max(-margin, Math.min(canvasHeight + margin, y));
+
+                // Zeichne die Bitmap des Planeten auf dem Canvas
+                canvas.drawBitmap(scaledBitmap, x - planetSize / 2, y - planetSize / 2, null);
+            }
+        }
+    }
+
+
+    public boolean isPlanetInView(double planetAzimuth, double planetElevation, double deviceAzimuth, double deviceElevation) {
+        // Toleranzen für den Azimut und die Elevation
+        double azimuthTolerance = 30.0;  // +-30 Grad Toleranz für Azimut
+        double elevationTolerance = 30.0;  // +-30 Grad Toleranz für Elevation
+
+        // Überprüfen, ob der Planet innerhalb der Toleranzen des Geräts liegt
+        boolean isAzimuthInRange = Math.abs(planetAzimuth - deviceAzimuth) <= azimuthTolerance;
+        boolean isElevationInRange = Math.abs(planetElevation - deviceElevation) <= elevationTolerance;
+
+        return isAzimuthInRange && isElevationInRange;
+    }
+
+    // Umrechnung von Roll und Pitch in Azimut und Elevation
+    public double[] calculateDeviceAzimuthElevation(double phoneRoll, double phonePitch) {
+        // Berechne Azimut und Elevation basierend auf den Roll- und Pitch-Werten
+        double azimuth = phoneRoll;  // Azimut des Geräts (Roll)
+        double elevation = phonePitch;  // Elevation des Geräts (Pitch)
+
+        // Sicherstellen, dass der Azimut im Bereich von 0 bis 360 Grad bleibt
+        if (azimuth < 0) azimuth += 360;
+        if (elevation < -90) elevation = -90;
+        if (elevation > 90) elevation = 90;
+
+        return new double[]{azimuth, elevation};
+    }
+
+
+
+    public void drawPlanetsRollPitch(Canvas canvas, List<Planet> visiblePlanets) {
 
         if (visiblePlanets != null && !visiblePlanets.isEmpty()) {
             // Bildschirmgröße für die Darstellung auf der Canvas holen
