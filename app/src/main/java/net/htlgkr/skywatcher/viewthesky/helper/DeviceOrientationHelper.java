@@ -52,9 +52,11 @@ public class DeviceOrientationHelper implements SensorEventListener {
                 float[] orientation = new float[3];
                 SensorManager.getOrientation(R, orientation);
 
+                // Wir extrahieren nur Pitch und Roll, nicht den Yaw
                 double tempPitch = Math.toDegrees(orientation[1]);
                 double tempRoll = Math.toDegrees(orientation[2]);
 
+                // Überprüfen, ob sich Pitch oder Roll geändert haben, um nur relevante Werte zu senden
                 if (Math.abs(pitch - tempPitch) > THRESHOLD || Math.abs(roll - tempRoll) > THRESHOLD) {
                     pitch = tempPitch;
                     roll = tempRoll;

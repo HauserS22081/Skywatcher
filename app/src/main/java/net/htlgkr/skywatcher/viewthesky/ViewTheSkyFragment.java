@@ -33,8 +33,9 @@ public class ViewTheSkyFragment extends Fragment {
     private double observerLongitude;
     private double observerAltitude;
 
-    private double phoneAzimuth = 0f;
+    //private double phoneAzimuth = 0f;
     private double phonePitch = 0f;
+    private double phoneRoll = 0f;
 
     private CanvasView canvasView;
     private List<Planet> planets;
@@ -91,8 +92,8 @@ public class ViewTheSkyFragment extends Fragment {
             }
         });
 
-        deviceOrientationHelper = new DeviceOrientationHelper(requireContext(), (azimuth, pitch) -> {
-            phoneAzimuth = azimuth;
+        deviceOrientationHelper = new DeviceOrientationHelper(requireContext(), (roll, pitch) -> {
+            phoneRoll = roll;
             phonePitch = pitch;
 
 
@@ -159,13 +160,13 @@ public class ViewTheSkyFragment extends Fragment {
         }
 
         visiblePlanets = calculatePlanetsForLocation();
-        canvasView.updateOrientation(phoneAzimuth, phonePitch);
+        canvasView.updateOrientation(phoneRoll, phonePitch);
 
 
 
         Log.e("loadPlanets", "visiblePlanets: " + visiblePlanets.size());
         Log.e("loadPlanets", "planets: " + planets.size());
-        Log.d("loadPlanets", "Azimuth: "+ phoneAzimuth);
+        Log.d("loadPlanets", "Roll: "+ phoneRoll);
         Log.d("loadPlanets", "Pitch: "+ phonePitch);
 
         canvasView.updateVisiblePlanets(visiblePlanets);
@@ -229,8 +230,55 @@ public class ViewTheSkyFragment extends Fragment {
 //    }
 
 
+    public static boolean isPlanetVisible(Planet planet, double deviceRoll, double devicePitch,
+                                          double observerLatitude, double observerLongitude, double screenWidth, double screenHeight) {
 
-    public static boolean isPlanetVisible(Planet planet, double deviceAzimuth, double devicePitch,
+        // map 3D to 2D coordinates
+
+        // Konvertiere RA und DEC in Azimut und Elevation relativ zum Beobachter
+        double planetAzimuth = Converter.calculateAzimuth(planet, observerLatitude, observerLongitude);
+        double planetElevation = Converter.calculateElevation(planet, observerLatitude, observerLongitude);
+
+        // Definiere eine Toleranz für Roll (anstelle von Azimut) und Elevation
+        double rollTolerance = 30.0;  // +-30 Grad für den Roll (erhöht für sanftere Übergänge)
+        double elevationTolerance = 30.0;  // +-30 Grad für die Elevation (erhöht für sanftere Übergänge)
+
+        // Berechne den Rollbereich des Geräts
+        double rollRangeStart = deviceRoll - rollTolerance;  // +-Toleranz nach links (oder roll)
+        double rollRangeEnd = deviceRoll + rollTolerance;    // +-Toleranz nach rechts (oder roll)
+
+        // Berechne den Pitchbereich des Geräts
+        double pitchRangeStart = devicePitch - elevationTolerance;  // +-Toleranz nach unten
+        double pitchRangeEnd = devicePitch + elevationTolerance;    // +-Toleranz nach oben
+
+        // Passe Roll an, um Werte zwischen -180 und 180 zu berücksichtigen
+        if (rollRangeStart < -180) rollRangeStart += 360;
+        if (rollRangeEnd > 180) rollRangeEnd -= 360;
+
+        // Überprüfe, ob der Planet im Bereich des Geräts liegt
+        boolean isInRollRange = (planetAzimuth >= rollRangeStart && planetAzimuth <= rollRangeEnd) ||
+                (rollRangeStart > rollRangeEnd && (planetAzimuth >= rollRangeStart || planetAzimuth <= rollRangeEnd));
+        boolean isInPitchRange = planetElevation >= pitchRangeStart && planetElevation <= pitchRangeEnd;
+
+        // Berechne den Azimut und die Elevation für die Bitmap-Darstellung
+        double planetScreenX = (planetAzimuth / 360.0) * screenWidth;
+        double planetScreenY = (planetElevation / 180.0) * screenHeight;
+
+        // Berücksichtige den Randbereich, indem wir ein kleineres Bild des Planeten zulassen
+        double screenMargin = 0.1 * Math.min(screenWidth, screenHeight);  // 10% vom Bildschirm als Randbereich
+
+        // Überprüfe, ob der Planet innerhalb der Bildgrenzen liegt (auch im Randbereich)
+        boolean isPlanetInScreenBounds = planetScreenX >= -screenMargin && planetScreenX <= screenWidth + screenMargin &&
+                planetScreenY >= -screenMargin && planetScreenY <= screenHeight + screenMargin;
+
+        // Der Planet ist sichtbar, wenn er in beiden Bereichen liegt und auch innerhalb der Bildgrenzen ist
+        return isInRollRange && isInPitchRange && isPlanetInScreenBounds;
+    }
+
+
+
+
+    public static boolean isPlanetVisibleOLDBUTworks(Planet planet, double deviceAzimuth, double devicePitch,
                                           double observerLatitude, double observerLongitude, double screenWidth, double screenHeight) {
 
 
@@ -355,7 +403,7 @@ public class ViewTheSkyFragment extends Fragment {
 
         for (Planet planet : planets) {
 
-            if (isPlanetVisible(planet, phoneAzimuth, phonePitch, observerLatitude, observerLongitude, phoneWidth, phoneHeight)) {
+            if (isPlanetVisible(planet, phoneRoll, phonePitch, observerLatitude, observerLongitude, phoneWidth, phoneHeight)) {
                 visiblePlanets.add(planet);
             }
 
@@ -365,14 +413,14 @@ public class ViewTheSkyFragment extends Fragment {
     }
 
     public void updateVisiblePlanets(List<Planet> allPlanets,
-                                     double phoneAzimuth, double phonePitch,
+                                     double phoneRoll, double phonePitch,
                                      double observerLatitude, double observerLongitude) {
         // Erstelle eine leere Liste für sichtbare Planeten
         List<Planet> visiblePlanets = new ArrayList<>();
 
         // Gehe durch alle Planeten und überprüfe, ob sie sichtbar sind
         for (Planet planet : allPlanets) {
-            if (isPlanetVisible(planet, phoneAzimuth, phonePitch, observerLatitude, observerLongitude, phoneWidth, phoneHeight)) {
+            if (isPlanetVisible(planet, phoneRoll, phonePitch, observerLatitude, observerLongitude, phoneWidth, phoneHeight)) {
                 visiblePlanets.add(planet);
             }
         }

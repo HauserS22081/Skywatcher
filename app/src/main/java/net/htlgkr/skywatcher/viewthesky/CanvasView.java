@@ -30,8 +30,8 @@ public class CanvasView extends View {
         Log.d("CanvasView", "(updateVisiblePlanets) Planeten aktualisiert: " + planets.size());
     }
 
-    public void updateOrientation(double azimuth, double pitch) {
-        this.phoneRoll = azimuth;
+    public void updateOrientation(double roll, double pitch) {
+        this.phoneRoll = roll;
         this.phonePitch = pitch;
 //        invalidate(); // Damit der View neu gezeichnet wird
     }
@@ -67,6 +67,50 @@ public class CanvasView extends View {
     }
 
     public void drawPlanets(Canvas canvas, List<Planet> visiblePlanets) {
+
+        if (visiblePlanets != null && !visiblePlanets.isEmpty()) {
+            // Bildschirmgröße für die Darstellung auf der Canvas holen
+            int canvasWidth = canvas.getWidth();
+            int canvasHeight = canvas.getHeight();
+
+            // Ein Puffer, um Planeten auch teilweise außerhalb der Grenzen anzuzeigen
+            int margin = 50;  // Anzahl der Pixel, um die der Planet außerhalb des sichtbaren Bereichs erscheinen kann
+
+            for (Planet planet : visiblePlanets) {
+                // Berechne, ob der Planet sichtbar ist (optional, wenn die Sichtbarkeitsprüfung gewünscht wird)
+                // boolean isVisible = isPlanetVisible(planet, phoneRoll, phonePitch, observerLatitude, observerLongitude, canvasWidth, canvasHeight);
+
+                // Wenn der Planet sichtbar ist, fahre fort
+                // if (isVisible) {
+                // Berechne die Differenzen zwischen Planeten-Azimut, Elevation und den aktuellen Ausrichtungen des Handys
+                double rollOffset = planet.getAzimuth() - phoneRoll;  // Differenz zwischen Planeten-Azimut und Handy-Roll
+                double pitchOffset = planet.getElevation() - phonePitch;  // Differenz zwischen Planeten-Elevation und Handy-Pitch
+
+                // Berechne Roll- und Pitch-Werte für den Bildschirm
+                float x = (float) ((rollOffset + 180) / 360 * canvasWidth);  // Roll-Werte auf den Bildschirmbereich abbilden (von -180 bis +180)
+                float y = (float) ((pitchOffset + 90) / 180 * canvasHeight);  // Pitch-Werte auf den Bildschirmbereich abbilden (von -90 bis +90)
+
+                // Sicherstellen, dass die Koordinaten innerhalb des Canvas-Bereichs liegen, auch teilweise außerhalb
+                x = Math.max(-margin, Math.min(canvasWidth + margin, x)); // Planeten können leicht außerhalb des sichtbaren Bereichs erscheinen
+                y = Math.max(-margin, Math.min(canvasHeight + margin, y)); // Planeten können leicht außerhalb des sichtbaren Bereichs erscheinen
+
+                // Zeichne den Planeten (Bitmap)
+                Bitmap planetBitmap = planet.bitmap;
+                if (planetBitmap != null) {
+                    // Skaliere das Bild auf eine bestimmte Größe (z.B. 50x50 Pixel)
+                    int planetSize = 300;
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(planetBitmap, planetSize, planetSize, true);
+
+                    // Zeichne die Bitmap mit einer Verschiebung, sodass sie teilweise außerhalb sichtbar ist
+                    canvas.drawBitmap(scaledBitmap, x - planetSize / 2, y - planetSize / 2, null); // Planet mittig an den berechneten Koordinaten zeichnen
+                }
+                // }
+            }
+        }
+    }
+
+
+    public void drawPlanets3101(Canvas canvas, List<Planet> visiblePlanets) {
 
         if (visiblePlanets != null && !visiblePlanets.isEmpty()) {
             // Bildschirmgröße für die Darstellung auf der Canvas holen
