@@ -73,38 +73,47 @@ public class CanvasView extends View {
         }
     }
 
+    // Berechnung der Azimut und Elevation
+    public double[] calculateDeviceAzimuthElevation(double phoneRoll, double phonePitch) {
+        // Roll und Pitch direkt als Azimut und Elevation verwenden
+        double azimuth = (phoneRoll + 180) % 360;  // Azimut von -180 bis 180 auf 0 bis 360 abbilden
+        if (azimuth < 0) azimuth += 360;  // Sicherstellen, dass Azimut im Bereich von 0 bis 360 bleibt
+
+        double elevation = Math.max(-90, Math.min(90, phonePitch));  // Elevation auf den Bereich von -90 bis 90 beschränken
+
+        return new double[]{azimuth, elevation};
+    }
+
+    // Funktion zur Berechnung der Bildschirmkoordinaten
     public void drawPlanets(Canvas canvas, List<Planet> visiblePlanets) {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
 
         for (Planet planet : visiblePlanets) {
-            // Berechne den Unterschied zwischen dem Planeten und der Geräteaustrichtung (Azimut und Elevation)
+            // Azimut- und Elevationsdifferenz berechnen
             double azimuthDifference = planet.getAzimuth() - phoneAzimuth;
             double elevationDifference = planet.getElevation() - phoneElevation;
 
-            // Mappen der Azimut- und Elevationsdifferenz auf 2D-Bildschirmkoordinaten
-            float x = (float) ((azimuthDifference + 180) / 360 * canvasWidth);  // Azimut in X umrechnen
-            float y = (float) ((elevationDifference + 90) / 180 * canvasHeight);  // Elevation in Y umrechnen
+            // Azimut- und Elevationsdifferenz auf Bildschirmkoordinaten mappen
+            float x = (float) ((azimuthDifference + 180) / 360 * canvasWidth);
+            float y = (float) ((elevationDifference + 90) / 180 * canvasHeight);
 
-            // Berechne Toleranz, sodass der Planet auch bei kleinen Änderungen von Pitch/Roll sichtbar bleibt
-            int planetSize = 100;  // Größe des Planeten auf dem Bildschirm
-            int margin = 50;  // Spielraum für Planeten außerhalb des sichtbaren Bereichs
+            // Sicherstellen, dass die Koordinaten innerhalb des sichtbaren Bereichs liegen
+            int margin = 50;  // Der Planeten kann bis zu 50 Pixel außerhalb des Bildschirms sichtbar sein
+            x = Math.max(-margin, Math.min(canvasWidth + margin, x));
+            y = Math.max(-margin, Math.min(canvasHeight + margin, y));
 
             // Zeichne den Planeten (Bitmap)
             Bitmap planetBitmap = planet.bitmap;
             if (planetBitmap != null) {
-                // Skaliere das Bild auf eine bestimmte Größe
+                int planetSize = 100;  // Größe des Planeten
                 Bitmap scaledBitmap = Bitmap.createScaledBitmap(planetBitmap, planetSize, planetSize, true);
-
-                // Stelle sicher, dass der Planet innerhalb des sichtbaren Bereichs liegt
-                x = Math.max(-margin, Math.min(canvasWidth + margin, x));
-                y = Math.max(-margin, Math.min(canvasHeight + margin, y));
-
-                // Zeichne die Bitmap des Planeten auf dem Canvas
                 canvas.drawBitmap(scaledBitmap, x - planetSize / 2, y - planetSize / 2, null);
             }
         }
     }
+
+
 
 
     public boolean isPlanetInView(double planetAzimuth, double planetElevation, double deviceAzimuth, double deviceElevation) {
@@ -119,19 +128,19 @@ public class CanvasView extends View {
         return isAzimuthInRange && isElevationInRange;
     }
 
-    // Umrechnung von Roll und Pitch in Azimut und Elevation
-    public double[] calculateDeviceAzimuthElevation(double phoneRoll, double phonePitch) {
-        // Berechne Azimut und Elevation basierend auf den Roll- und Pitch-Werten
-        double azimuth = phoneRoll;  // Azimut des Geräts (Roll)
-        double elevation = phonePitch;  // Elevation des Geräts (Pitch)
-
-        // Sicherstellen, dass der Azimut im Bereich von 0 bis 360 Grad bleibt
-        if (azimuth < 0) azimuth += 360;
-        if (elevation < -90) elevation = -90;
-        if (elevation > 90) elevation = 90;
-
-        return new double[]{azimuth, elevation};
-    }
+//    // Umrechnung von Roll und Pitch in Azimut und Elevation
+//    public double[] calculateDeviceAzimuthElevation(double phoneRoll, double phonePitch) {
+//        // Berechne Azimut und Elevation basierend auf den Roll- und Pitch-Werten
+//        double azimuth = phoneRoll;  // Azimut des Geräts (Roll)
+//        double elevation = phonePitch;  // Elevation des Geräts (Pitch)
+//
+//        // Sicherstellen, dass der Azimut im Bereich von 0 bis 360 Grad bleibt
+//        if (azimuth < 0) azimuth += 360;
+//        if (elevation < -90) elevation = -90;
+//        if (elevation > 90) elevation = 90;
+//
+//        return new double[]{azimuth, elevation};
+//    }
 
 
 
