@@ -73,6 +73,155 @@ public class CanvasView extends View {
         if (visiblePlanets != null && !visiblePlanets.isEmpty()) {
             int canvasWidth = canvas.getWidth();
             int canvasHeight = canvas.getHeight();
+
+            double FOV_AZIMUTH = 60.0;  // Sichtfeld in Grad für Azimut (z. B. 60°)
+            double FOV_ELEVATION = 40.0; // Sichtfeld in Grad für Elevation (z. B. 40°)
+
+            double centerAzimuth = phonePitch;  // Aktuelle Blickrichtung (Azimut)
+            double centerElevation = phoneRoll; // Aktuelle Blickrichtung (Elevation)
+
+            for (Planet planet : visiblePlanets) {
+                double relativeAzimuth = planet.getAzimuth() - centerAzimuth;
+                double relativeElevation = planet.getElevation() - centerElevation;
+
+                // Normalisiere Azimut-Offset (-180 bis 180)
+                while (relativeAzimuth > 180) relativeAzimuth -= 360;
+                while (relativeAzimuth < -180) relativeAzimuth += 360;
+
+                // Falls ein Planet außerhalb des FOV liegt, nicht zeichnen
+                if (Math.abs(relativeAzimuth) > FOV_AZIMUTH / 2) continue;
+                if (Math.abs(relativeElevation) > FOV_ELEVATION / 2) continue;
+
+                // Position auf dem Bildschirm berechnen
+                float x = (float) (((relativeAzimuth + (FOV_AZIMUTH / 2)) / FOV_AZIMUTH) * canvasWidth);
+                float y = (float) (((-(relativeElevation) + (FOV_ELEVATION / 2)) / FOV_ELEVATION) * canvasHeight);
+
+                Bitmap planetBitmap = planet.bitmap;
+                if (planetBitmap != null) {
+                    int planetSize = 80;
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(planetBitmap, planetSize, planetSize, true);
+                    canvas.drawBitmap(scaledBitmap, x - planetSize / 2, y - planetSize / 2, null);
+                }
+            }
+        }
+    }
+
+
+    public void drawPlanetsRollPitchFOVtoHIGH(Canvas canvas, List<Planet> visiblePlanets) {
+        if (visiblePlanets != null && !visiblePlanets.isEmpty()) {
+            int canvasWidth = canvas.getWidth();
+            int canvasHeight = canvas.getHeight();
+
+            double FOV_AZIMUTH = 90.0;  // Sichtfeld in Grad für Azimut (z. B. 90°)
+            double FOV_ELEVATION = 60.0; // Sichtfeld in Grad für Elevation (z. B. 60°)
+
+            double centerAzimuth = phonePitch;  // Aktuelle Blickrichtung (Azimut)
+            double centerElevation = phoneRoll; // Aktuelle Blickrichtung (Elevation)
+
+            for (Planet planet : visiblePlanets) {
+                double relativeAzimuth = planet.getAzimuth() - centerAzimuth;
+                double relativeElevation = planet.getElevation() - centerElevation;
+
+                // Normalisiere Azimut-Offset (-180 bis 180)
+                if (relativeAzimuth > 180) relativeAzimuth -= 360;
+                if (relativeAzimuth < -180) relativeAzimuth += 360;
+
+                // Falls ein Planet außerhalb des horizontalen FOV liegt, wrappe ihn um
+                if (relativeAzimuth > 180 - FOV_AZIMUTH / 2) relativeAzimuth -= 360;
+                if (relativeAzimuth < -180 + FOV_AZIMUTH / 2) relativeAzimuth += 360;
+
+                // Falls ein Planet außerhalb des vertikalen FOV liegt, wrappe ihn um
+                if (relativeElevation > 90 - FOV_ELEVATION / 2) relativeElevation -= 180;
+                if (relativeElevation < -90 + FOV_ELEVATION / 2) relativeElevation += 180;
+
+                // Normiere die Position ins Canvas-Koordinatensystem
+                float x = (float) (((relativeAzimuth + (FOV_AZIMUTH / 2)) / FOV_AZIMUTH) * canvasWidth);
+                float y = (float) (((-(relativeElevation) + (FOV_ELEVATION / 2)) / FOV_ELEVATION) * canvasHeight);
+
+                Bitmap planetBitmap = planet.bitmap;
+                if (planetBitmap != null) {
+                    int planetSize = 100;
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(planetBitmap, planetSize, planetSize, true);
+                    canvas.drawBitmap(scaledBitmap, x - planetSize / 2, y - planetSize / 2, null);
+                }
+            }
+        }
+    }
+
+
+    public void drawPlanetsRollPitchNEW(Canvas canvas, List<Planet> visiblePlanets) {
+        if (visiblePlanets != null && !visiblePlanets.isEmpty()) {
+            int canvasWidth = canvas.getWidth();
+            int canvasHeight = canvas.getHeight();
+
+            double FOV_AZIMUTH = 90.0;  // Sichtfeld in Grad für Azimut (z. B. 90°)
+            double FOV_ELEVATION = 60.0; // Sichtfeld in Grad für Elevation (z. B. 60°)
+
+            double centerAzimuth = phonePitch;  // Aktuelle Blickrichtung (Azimut)
+            double centerElevation = phoneRoll; // Aktuelle Blickrichtung (Elevation)
+
+            for (Planet planet : visiblePlanets) {
+                double relativeAzimuth = planet.getAzimuth() - centerAzimuth;
+                double relativeElevation = planet.getElevation() - centerElevation;
+
+                // Normalisiere Azimut-Offset (-180 bis 180)
+                if (relativeAzimuth > 180) relativeAzimuth -= 360;
+                if (relativeAzimuth < -180) relativeAzimuth += 360;
+
+                // Falls ein Planet außerhalb des FOV liegt, überspringen
+                if (Math.abs(relativeAzimuth) > FOV_AZIMUTH / 2) continue;
+                if (Math.abs(relativeElevation) > FOV_ELEVATION / 2) continue;
+
+                // Normiere die Position ins Canvas-Koordinatensystem
+                float x = (float) (((relativeAzimuth + (FOV_AZIMUTH / 2)) / FOV_AZIMUTH) * canvasWidth);
+                float y = (float) (((-(relativeElevation) + (FOV_ELEVATION / 2)) / FOV_ELEVATION) * canvasHeight);
+
+                Bitmap planetBitmap = planet.bitmap;
+                if (planetBitmap != null) {
+                    int planetSize = 100;
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(planetBitmap, planetSize, planetSize, true);
+                    canvas.drawBitmap(scaledBitmap, x - planetSize / 2, y - planetSize / 2, null);
+                }
+            }
+        }
+    }
+
+
+    public void drawPlanetsRollPitchOLDWORKS(Canvas canvas, List<Planet> visiblePlanets) {
+        if (visiblePlanets != null && !visiblePlanets.isEmpty()) {
+            int canvasWidth = canvas.getWidth();
+            int canvasHeight = canvas.getHeight();
+
+            double centerAzimuth = phonePitch;  // Die aktuelle Blickrichtung (Azimut)
+            double centerElevation = phoneRoll; // Die aktuelle Höhe (Elevation)
+
+            for (Planet planet : visiblePlanets) {
+                double relativeAzimuth = planet.getAzimuth() - centerAzimuth;
+                double relativeElevation = planet.getElevation() - centerElevation;
+
+                // Falls Azimut-Offset über 180° geht, normalisieren (-180 bis 180)
+                if (relativeAzimuth > 180) relativeAzimuth -= 360;
+                if (relativeAzimuth < -180) relativeAzimuth += 360;
+
+                // Rechne Azimut und Elevation in Pixel-Koordinaten um
+                float x = (float) ((relativeAzimuth / 360.0) * canvasWidth + (canvasWidth / 2));
+                float y = (float) ((-relativeElevation / 180.0) * canvasHeight + (canvasHeight / 2));
+
+                Bitmap planetBitmap = planet.bitmap;
+                if (planetBitmap != null) {
+                    int planetSize = 100;
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(planetBitmap, planetSize, planetSize, true);
+                    canvas.drawBitmap(scaledBitmap, x - planetSize / 2, y - planetSize / 2, null);
+                }
+            }
+        }
+    }
+
+
+    public void drawPlanetsRollPitchOLD(Canvas canvas, List<Planet> visiblePlanets) {
+        if (visiblePlanets != null && !visiblePlanets.isEmpty()) {
+            int canvasWidth = canvas.getWidth();
+            int canvasHeight = canvas.getHeight();
             int margin = 50;
 
             for (Planet planet : visiblePlanets) {
