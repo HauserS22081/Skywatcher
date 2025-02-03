@@ -8,13 +8,10 @@ import android.hardware.SensorManager;
 
 public class DeviceOrientationHelper implements SensorEventListener {
 
-    private static final double THRESHOLD = 1;
-
     private SensorManager sensorManager;
     private Sensor accelerometer;
-    private Sensor magnetometer;
-    private float[] gravity;
-    private float[] geomagnetic;
+    private Sensor gyroscope;
+
     private double pitch;
     private double roll;
 
@@ -24,12 +21,16 @@ public class DeviceOrientationHelper implements SensorEventListener {
         this.listener = listener;
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
     }
 
     public void start() {
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
+        if (accelerometer != null) {
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
+        if (gyroscope != null) {
+            sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_UI);
+        }
     }
 
     public void stop() {
@@ -39,37 +40,34 @@ public class DeviceOrientationHelper implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            gravity = event.values;
-        } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-            geomagnetic = event.values;
+            onAccelerometerChanged(event);
         }
-
-        if (gravity != null && geomagnetic != null) {
-            float[] R = new float[9];
-            float[] I = new float[9];
-            boolean success = SensorManager.getRotationMatrix(R, I, gravity, geomagnetic);
-            if (success) {
-                float[] orientation = new float[3];
-                SensorManager.getOrientation(R, orientation);
-
-                // Wir extrahieren nur Pitch und Roll, nicht den Yaw
-                double tempPitch = Math.toDegrees(orientation[1]);
-                double tempRoll = Math.toDegrees(orientation[2]);
-
-                // Überprüfen, ob sich Pitch oder Roll geändert haben, um nur relevante Werte zu senden
-                if (Math.abs(pitch - tempPitch) > THRESHOLD || Math.abs(roll - tempRoll) > THRESHOLD) {
-                    pitch = tempPitch;
-                    roll = tempRoll;
-
-                    listener.onOrientationChanged(pitch, roll);
-                }
-            }
+        else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            onGyroscopeChanged(event);
         }
+    }
+
+    private void onAccelerometerChanged(SensorEvent event) {
+        // Berechnung des Pitch und Roll-Werts basierend auf den Beschleunigungswerten
+        double x = event.values[0];
+        double y = event.values[1];
+        double z = event.values[2];
+
+        // Berechnung von Pitch und Roll
+        pitch = Math.atan2(y, z) * (180 / Math.PI);
+        roll = Math.atan2(x, z) * (180 / Math.PI);
+
+        listener.onOrientationChanged(pitch, roll);
+    }
+
+    private void onGyroscopeChanged(SensorEvent event) {
+        // Hier könntest du zusätzliche Logik zur Verwendung von Gyroskop-Daten hinzufügen
+        // Um Pitch und Roll weiter zu verfeinern, falls nötig
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Keine Aktion nötig
+        // Keine Aktion erforderlich
     }
 
     public interface OnOrientationChangedListener {

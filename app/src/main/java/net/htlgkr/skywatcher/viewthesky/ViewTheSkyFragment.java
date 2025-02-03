@@ -92,19 +92,12 @@ public class ViewTheSkyFragment extends Fragment {
             }
         });
 
-        deviceOrientationHelper = new DeviceOrientationHelper(requireContext(), (roll, pitch) -> {
+        deviceOrientationHelper = new DeviceOrientationHelper(requireContext(), (pitch, roll) -> {
             phoneRoll = roll;
             phonePitch = pitch;
-
-
-
             loadPlanets();
-
-
-
-//            // Optional: Zeige die Werte im Log
-//            Log.e("Orientation", "Azimuth: " + phoneAzimuth + ", Pitch: " + phonePitch);
         });
+
 
 
 
