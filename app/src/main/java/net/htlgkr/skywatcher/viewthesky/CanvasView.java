@@ -11,6 +11,7 @@ import java.util.List;
 
 public class CanvasView extends View {
     private List<Planet> planets;
+    private double phoneYaw = 0.0;
     private double phoneRoll = 0.0;
     private double phonePitch = 0.0;
     private OnDrawCallback onDrawCallback;
@@ -31,14 +32,17 @@ public class CanvasView extends View {
         Log.d("CanvasView", "(updateVisiblePlanets) Updated planets: " + planets.size());
     }
 
-    public void updateOrientation(double roll, double pitch) {
-        this.phoneRoll = roll;
+    public void updateOrientation(double yaw, double pitch, double roll) {
+        this.phoneYaw = yaw;
         this.phonePitch = pitch;
+        this.phoneRoll = roll;
 
         // Compute device azimuth and elevation
-        double[] deviceAzimuthElevation = calculateDeviceAzimuthElevation(phoneRoll, phonePitch);
+        double[] deviceAzimuthElevation = calculateDeviceAzimuthElevation(phoneYaw, phonePitch, phoneRoll);
         this.phoneAzimuth = deviceAzimuthElevation[0];
         this.phoneElevation = deviceAzimuthElevation[1];
+
+        invalidate();
     }
 
     @Override
@@ -57,15 +61,19 @@ public class CanvasView extends View {
         }
     }
 
-    public double[] calculateDeviceAzimuthElevation(double phoneRoll, double phonePitch) {
-        double azimuth = (phonePitch + 180) % 360;
-        if (azimuth < 0) azimuth += 360;
-
-        double elevation = Math.max(-90, Math.min(90, phoneRoll));
+    /**
+     * Berechnet Azimuth und Elevation unter Berücksichtigung von Yaw, Pitch und Roll.
+     */
+    public double[] calculateDeviceAzimuthElevation(double yaw, double pitch, double roll) {
+        double azimuth = (yaw + 360) % 360; // Yaw als Basis für Azimuth
+        double elevation = Math.max(-90, Math.min(90, pitch)); // Pitch entspricht der Elevation
 
         return new double[]{azimuth, elevation};
     }
 
+    /**
+     * Zeichnet die sichtbaren Planeten auf das Canvas.
+     */
     public void drawPlanets(Canvas canvas, List<Planet> visiblePlanets) {
         if (visiblePlanets == null || visiblePlanets.isEmpty()) return;
 
@@ -75,8 +83,8 @@ public class CanvasView extends View {
         double FOV_AZIMUTH = 90.0;
         double FOV_ELEVATION = 60.0;
 
-        double centerAzimuth = phonePitch;
-        double centerElevation = phoneRoll;
+        double centerAzimuth = phoneAzimuth;
+        double centerElevation = phoneElevation;
 
         for (Planet planet : visiblePlanets) {
             double relativeAzimuth = planet.getAzimuth() - centerAzimuth;

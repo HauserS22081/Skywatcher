@@ -1,6 +1,5 @@
 package net.htlgkr.skywatcher.viewthesky;
 
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +9,6 @@ import android.widget.FrameLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
 
 import net.htlgkr.skywatcher.HttpListener;
 import net.htlgkr.skywatcher.HttpViewModel;
@@ -26,14 +24,13 @@ import java.util.List;
 public class ViewTheSkyFragment extends Fragment {
 
     private FragmentViewTheSkyBinding binding;
-
     private static final String URL = "https://api.le-systeme-solaire.net/rest/bodies";
 
     private double observerLatitude;
     private double observerLongitude;
     private double observerAltitude;
 
-    //private double phoneAzimuth = 0f;
+    private double phoneYaw = 0f;
     private double phonePitch = 0f;
     private double phoneRoll = 0f;
 
@@ -41,15 +38,12 @@ public class ViewTheSkyFragment extends Fragment {
     private List<Planet> planets;
     private List<Planet> visiblePlanets;
 
-
     private long lastUpdateTime = 0;
     private DeviceOrientationHelper deviceOrientationHelper;
-
     private FrameLayout loadingOverlay;
 
     private double phoneHeight;
     private double phoneWidth;
-
 
     public ViewTheSkyFragment() {
         // Required empty public constructor
@@ -63,56 +57,37 @@ public class ViewTheSkyFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentViewTheSkyBinding.inflate(inflater, container, false);
-
-
         canvasView = binding.canvasView;
         loadingOverlay = binding.flLoadingOverlay;
 
         phoneHeight = canvasView.getHeight();
         phoneWidth = canvasView.getWidth();
 
-        // deviceLocationHelper in succuess ausführen oder for über planets onsucess machen und device location helper davor machen
         DeviceLocationHelper deviceLocationHelper = new DeviceLocationHelper(requireContext());
         deviceLocationHelper.fetchLocation((location, timeMillis) -> {
             if (location != null) {
-                // Get latitude, longitude, and altitude
                 observerLatitude = location.getLatitude();
                 observerLongitude = location.getLongitude();
                 observerAltitude = location.getAltitude();
-
-//                // Use the values
-//                Log.d("Location", "Latitude: " + observerLatitude +
-//                        ", Longitude: " + observerLongitude +
-//                        ", Altitude: " + observerAltitude);
-
                 loadPlanets();
-
             } else {
                 Log.e("Location", "Failed to get location.");
             }
         });
 
-        deviceOrientationHelper = new DeviceOrientationHelper(requireContext(), (pitch, roll) -> {
+        deviceOrientationHelper = new DeviceOrientationHelper(requireContext(), (yaw, pitch, roll) -> {
+            phoneYaw = yaw;
             phoneRoll = roll;
             phonePitch = pitch;
             loadPlanets();
         });
 
-
-
-
         planets = new ArrayList<>();
-
         HttpViewModel httpViewModel = new ViewModelProvider(requireActivity()).get(HttpViewModel.class);
         httpViewModel.requestData(new HttpListener<List<Planet>>() {
             @Override
             public void onSuccess(List<Planet> response) {
-                if (response == null) {
-                    Log.e("requestData", "is null");
-                } else if (response.isEmpty()) {
-                    Log.e("requestData", "is empty");
-                } else {
-                    Log.e("requestData", "worked");
+                if (response != null && !response.isEmpty()) {
                     planets.addAll(response);
 
                     for (int i = 0; i < planets.size(); i++) {
@@ -123,29 +98,26 @@ public class ViewTheSkyFragment extends Fragment {
                     }
 
                     loadPlanets();
-
                     loadingOverlay.setVisibility(View.INVISIBLE);
+                } else {
+                    Log.e("requestData", "No planet data received.");
                 }
             }
 
             @Override
             public void onError(String error) {
-                Log.e("requestData", "Fehler beim Abrufen der Planeten: " + error);
+                Log.e("requestData", "Error fetching planets: " + error);
             }
         }, URL);
 
         loadingOverlay.setVisibility(View.VISIBLE);
-
         return binding.getRoot();
     }
 
     private void loadPlanets() {
-
-        // planeten in einem neuem ViewModel speichern
-
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastUpdateTime < 5) {
-            return; // Abbrechen, wenn das letzte Update weniger als 1 Sekunde her ist
+            return;
         }
 
         lastUpdateTime = currentTime;
@@ -155,78 +127,54 @@ public class ViewTheSkyFragment extends Fragment {
         }
 
         visiblePlanets = calculatePlanetsForLocation();
-        canvasView.updateOrientation(phoneRoll, phonePitch);
+        canvasView.updateOrientation(phoneYaw, phonePitch, phoneRoll);
+        canvasView.updateVisiblePlanets(visiblePlanets);
 
-
-
-        Log.e("loadPlanets", "visiblePlanets: " + visiblePlanets.size());
-        Log.e("loadPlanets", "planets: " + planets.size());
-        Log.d("loadPlanets", "Roll: "+ phoneRoll);
-        Log.d("loadPlanets", "Pitch: "+ phonePitch);
-
-        canvasView.updateVisiblePlanets(planets);
+        Log.d("loadPlanets", "Yaw: " + phoneYaw);
+        Log.d("loadPlanets", "Pitch: " + phonePitch);
+        Log.d("loadPlanets", "Roll: " + phoneRoll);
+        Log.d("loadPlanets", "Visible Planets: " + visiblePlanets.size());
     }
 
-    public static boolean isPlanetVisible(Planet planet, double deviceRoll, double devicePitch,
+    public static boolean isPlanetVisible(Planet planet, double deviceYaw, double devicePitch, double deviceRoll,
                                           double observerLatitude, double observerLongitude, double screenWidth, double screenHeight) {
 
-        // map 3D to 2D coordinates
-
-        // Konvertiere RA und DEC in Azimut und Elevation relativ zum Beobachter
         double planetAzimuth = Converter.calculateAzimuth(planet, observerLatitude, observerLongitude);
         double planetElevation = Converter.calculateElevation(planet, observerLatitude, observerLongitude);
 
-        // Definiere eine Toleranz für Roll (anstelle von Azimut) und Elevation
-        double rollTolerance = 30.0;  // +-30 Grad für den Roll (erhöht für sanftere Übergänge)
-        double elevationTolerance = 30.0;  // +-30 Grad für die Elevation (erhöht für sanftere Übergänge)
+        double azimuthTolerance = 45.0;  // +-45° horizontale Sichtweite (hängt vom FOV der Kamera ab)
+        double elevationTolerance = 30.0;  // +-30° vertikale Sichtweite
 
-        // Berechne den Rollbereich des Geräts
-        double rollRangeStart = deviceRoll - rollTolerance;  // +-Toleranz nach links (oder roll)
-        double rollRangeEnd = deviceRoll + rollTolerance;    // +-Toleranz nach rechts (oder roll)
+        double yawRangeStart = (deviceYaw - azimuthTolerance + 360) % 360;
+        double yawRangeEnd = (deviceYaw + azimuthTolerance) % 360;
+        double pitchRangeStart = devicePitch - elevationTolerance;
+        double pitchRangeEnd = devicePitch + elevationTolerance;
 
-        // Berechne den Pitchbereich des Geräts
-        double pitchRangeStart = devicePitch - elevationTolerance;  // +-Toleranz nach unten
-        double pitchRangeEnd = devicePitch + elevationTolerance;    // +-Toleranz nach oben
-
-        // Passe Roll an, um Werte zwischen -180 und 180 zu berücksichtigen
-        if (rollRangeStart < -180) rollRangeStart += 360;
-        if (rollRangeEnd > 180) rollRangeEnd -= 360;
-
-        // Überprüfe, ob der Planet im Bereich des Geräts liegt
-        boolean isInRollRange = (planetAzimuth >= rollRangeStart && planetAzimuth <= rollRangeEnd) ||
-                (rollRangeStart > rollRangeEnd && (planetAzimuth >= rollRangeStart || planetAzimuth <= rollRangeEnd));
+        boolean isInYawRange = (planetAzimuth >= yawRangeStart && planetAzimuth <= yawRangeEnd) ||
+                (yawRangeStart > yawRangeEnd && (planetAzimuth >= yawRangeStart || planetAzimuth <= yawRangeEnd));
         boolean isInPitchRange = planetElevation >= pitchRangeStart && planetElevation <= pitchRangeEnd;
 
-        // Berechne den Azimut und die Elevation für die Bitmap-Darstellung
-        double planetScreenX = (planetAzimuth / 360.0) * screenWidth;
-        double planetScreenY = (planetElevation / 180.0) * screenHeight;
+        double screenX = (planetAzimuth / 360.0) * screenWidth;
+        double screenY = ((90 - planetElevation) / 180.0) * screenHeight;
 
-        // Berücksichtige den Randbereich, indem wir ein kleineres Bild des Planeten zulassen
-        double screenMargin = 0.1 * Math.min(screenWidth, screenHeight);  // 10% vom Bildschirm als Randbereich
+        double screenMargin = 0.1 * Math.min(screenWidth, screenHeight);
 
-        // Überprüfe, ob der Planet innerhalb der Bildgrenzen liegt (auch im Randbereich)
-        boolean isPlanetInScreenBounds = planetScreenX >= -screenMargin && planetScreenX <= screenWidth + screenMargin &&
-                planetScreenY >= -screenMargin && planetScreenY <= screenHeight + screenMargin;
+        boolean isInScreenBounds = screenX >= -screenMargin && screenX <= screenWidth + screenMargin &&
+                screenY >= -screenMargin && screenY <= screenHeight + screenMargin;
 
-        // Der Planet ist sichtbar, wenn er in beiden Bereichen liegt und auch innerhalb der Bildgrenzen ist
-        return isInRollRange && isInPitchRange && isPlanetInScreenBounds;
+        return isInYawRange && isInPitchRange && isInScreenBounds;
     }
-
 
     private List<Planet> calculatePlanetsForLocation() {
         List<Planet> visiblePlanets = new ArrayList<>();
 
         for (Planet planet : planets) {
-
-            if (isPlanetVisible(planet, phoneRoll, phonePitch, observerLatitude, observerLongitude, phoneWidth, phoneHeight)) {
+            if (isPlanetVisible(planet, phoneYaw, phonePitch, phoneRoll, observerLatitude, observerLongitude, phoneWidth, phoneHeight)) {
                 visiblePlanets.add(planet);
             }
-
         }
-
         return visiblePlanets;
     }
-
 
     @Override
     public void onResume() {
@@ -239,5 +187,4 @@ public class ViewTheSkyFragment extends Fragment {
         super.onPause();
         deviceOrientationHelper.stop();
     }
-
 }
