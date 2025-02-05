@@ -36,6 +36,9 @@ public class Planet {
     private float azimuth;
     private float elevation;
 
+    private float x;
+    private float y;
+
     public Planet(String name, Bitmap bitmap, double mainAnomaly, double eccentricity, double inclination, double longAscNode, double argPeriapsis, double semiMajorAxis) {
         this.name = name;
         this.bitmap = bitmap;
@@ -45,6 +48,22 @@ public class Planet {
         this.longAscNode = longAscNode;
         this.argPeriapsis = argPeriapsis;
         this.semiMajorAxis = semiMajorAxis;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
     }
 
     public Bitmap getBitmap() {

@@ -14,10 +14,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 public class DeviceLocationHelper {
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
+    private final FusedLocationProviderClient fusedLocationProviderClient;
     private Location currentLocation;
     private long currentTimeMillis;
-    private Context context;
+    private final Context context;
 
     public DeviceLocationHelper(Context context) {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
@@ -26,13 +26,6 @@ public class DeviceLocationHelper {
 
     public void fetchLocation(OnLocationUpdatedListener listener) {
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //  Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {

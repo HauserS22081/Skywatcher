@@ -10,15 +10,15 @@ public class DeviceOrientationHelper implements SensorEventListener {
 
     private static final double THRESHOLD = 1;
 
-    private SensorManager sensorManager;
-    private Sensor accelerometer;
-    private Sensor magnetometer;
+    private final SensorManager sensorManager;
+    private final Sensor accelerometer;
+    private final Sensor magnetometer;
     private float[] gravity;
     private float[] geomagnetic;
     private double pitch;
     private double roll;
 
-    private OnOrientationChangedListener listener;
+    private final OnOrientationChangedListener listener;
 
     public DeviceOrientationHelper(Context context, OnOrientationChangedListener listener) {
         this.listener = listener;
@@ -52,11 +52,9 @@ public class DeviceOrientationHelper implements SensorEventListener {
                 float[] orientation = new float[3];
                 SensorManager.getOrientation(R, orientation);
 
-                // Wir extrahieren nur Pitch und Roll, nicht den Yaw
                 double tempPitch = Math.toDegrees(orientation[1]);
                 double tempRoll = Math.toDegrees(orientation[2]);
 
-                // Überprüfen, ob sich Pitch oder Roll geändert haben, um nur relevante Werte zu senden
                 if (Math.abs(pitch - tempPitch) > THRESHOLD || Math.abs(roll - tempRoll) > THRESHOLD) {
                     pitch = tempPitch;
                     roll = tempRoll;
@@ -69,7 +67,6 @@ public class DeviceOrientationHelper implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Keine Aktion nötig
     }
 
     public interface OnOrientationChangedListener {
