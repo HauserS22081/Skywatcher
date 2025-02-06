@@ -46,13 +46,13 @@ public class SkyObjectDataViewModel extends ViewModel {
     public void addValues() {
         skyObjects = new ArrayList<>();
 
-        skyObjects.add(new SkyObject("Sun", R.drawable.sun, 1000));
+        skyObjects.add(new SkyObject("Sun", R.drawable.sun, 4000));
         skyObjects.add(new SkyObject("Mercury", R.drawable.mercury, 300));
-        skyObjects.add(new SkyObject("Venus", R.drawable.venus, 300));
-        skyObjects.add(new SkyObject("Earth", R.drawable.earth, 300));
+        skyObjects.add(new SkyObject("Venus", R.drawable.venus, 350));
+        skyObjects.add(new SkyObject("Earth", R.drawable.earth, 350));
         skyObjects.add(new SkyObject("Mars", R.drawable.mars, 300));
-        skyObjects.add(new SkyObject("Jupiter", R.drawable.jupiter, 600));
-        skyObjects.add(new SkyObject("Saturn", R.drawable.saturn, 600));
+        skyObjects.add(new SkyObject("Jupiter", R.drawable.jupiter, 700));
+        skyObjects.add(new SkyObject("Saturn", R.drawable.saturn, 700));
         skyObjects.add(new SkyObject("Uranus", R.drawable.uranus, 400));
         skyObjects.add(new SkyObject("Neptune", R.drawable.neptune, 400));
     }

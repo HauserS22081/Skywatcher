@@ -22,7 +22,7 @@
         android:id="@+id/cv_view_the_sky"
         android:layout_width="260dp"
         android:layout_height="140dp"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="280dp"
         android:backgroundTint="@color/md_theme_primary"
         android:checkable="true"
         android:clickable="true"
@@ -50,7 +50,7 @@
             android:layout_height="60dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
-            android:src="@drawable/planet"
+            android:src="@drawable/night"
             android:tint="@color/md_theme_onPrimary" />
     </com.google.android.material.card.MaterialCardView>
 
@@ -59,7 +59,7 @@
         android:id="@+id/cv_planets"
         android:layout_width="260dp"
         android:layout_height="140dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:backgroundTint="@color/md_theme_primary"
         android:checkable="true"
         android:clickable="true"
@@ -96,7 +96,7 @@
         android:id="@+id/cv_news"
         android:layout_width="260dp"
         android:layout_height="140dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:backgroundTint="@color/md_theme_primary"
         android:checkable="true"
         android:clickable="true"

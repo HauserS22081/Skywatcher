@@ -22,7 +22,7 @@ public class MyBottomSheetFragment extends BottomSheetDialogFragment {
         SkyObjectDataViewModel viewModel = new ViewModelProvider(requireActivity()).get(SkyObjectDataViewModel.class);
         SkyObject skyObject = viewModel.getCurrentSkyObject();
 
-        binding.tvName.setText("Name: " + skyObject.getName());
+        binding.tvName.setText(skyObject.getName());
         binding.tvMoonCount.setText("Moon Count: " + skyObject.getMoonsCount());
         binding.tvAvgTemp.setText(String.format("Average Tempertature: %.2f °C", skyObject.getAvgTemp()));
         binding.tvGravity.setText(String.format("Gravity: %.2f",skyObject.getGravity()));

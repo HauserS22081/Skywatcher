@@ -32,14 +32,25 @@ public class MySkyObjectRecyclerViewAdapter extends RecyclerView.Adapter<MySkyOb
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.item = skyObjects.get(position);
         holder.ivImage.setImageResource(holder.item.getImage());
-        holder.ivImage.setMaxHeight(holder.item.getSize());
-        holder.ivImage.setMaxWidth(holder.item.getSize());
+
+        // Update layout parameters for explicit size changes
+        ViewGroup.LayoutParams layoutParams = holder.ivImage.getLayoutParams();
+        layoutParams.width = holder.item.getSize();
+        layoutParams.height = holder.item.getSize();
+        holder.ivImage.setLayoutParams(layoutParams);
+
+        ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) holder.ivImage.getLayoutParams();
 
 
+        if ("sun".equalsIgnoreCase(holder.item.getName())) {
+            marginLayoutParams.topMargin = -2500;
+            marginLayoutParams.bottomMargin = -300;
+        }else {
+            marginLayoutParams.topMargin = 50;
+            marginLayoutParams.bottomMargin = 50;
+        }
 
-//        ViewGroup.LayoutParams layoutParams = holder.ivImage.getLayoutParams();
-//        layoutParams.height = holder.item.getSize();
-//        holder.ivImage.setLayoutParams(layoutParams);
+        holder.ivImage.setLayoutParams(marginLayoutParams);
     }
 
     @Override
