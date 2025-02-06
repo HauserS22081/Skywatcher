@@ -38,6 +38,10 @@ public class StartFragment extends Fragment {
             mainViewModel.showNews();
         });
 
+        binding.cvPlanets.setOnClickListener(view -> {
+            mainViewModel.showPlanetList();
+        });
+
         binding.cvViewTheSky.setOnClickListener(view -> {
             mainViewModel.showViewTheSky();
         });

@@ -1,4 +1,4 @@
-package net.htlgkr.skywatcher.http;
+package net.htlgkr.skywatcher.news;
 
 import java.util.Objects;
 

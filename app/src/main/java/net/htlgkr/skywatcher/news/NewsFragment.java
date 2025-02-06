@@ -15,19 +15,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import net.htlgkr.skywatcher.HttpListener;
-import net.htlgkr.skywatcher.HttpViewModel;
+import net.htlgkr.skywatcher.http.HttpListener;
+import net.htlgkr.skywatcher.http.HttpViewModel;
 import net.htlgkr.skywatcher.MainViewModel;
 import net.htlgkr.skywatcher.R;
 import net.htlgkr.skywatcher.details.DetailsViewModel;
-import net.htlgkr.skywatcher.http.ExtendedNews;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A fragment representing a list of Items.
- */
 public class NewsFragment extends Fragment {
 
     private int columnCount = 1;
@@ -50,11 +46,8 @@ public class NewsFragment extends Fragment {
         DetailsViewModel detailsViewModel = new ViewModelProvider(requireActivity()).get(DetailsViewModel.class);
 
         View tempview = inflater.inflate(R.layout.fragment_item_list, container, false);
-
         View view = tempview.findViewById(R.id.list);
-
         loadingOverlay = tempview.findViewById(R.id.fl_loadingOverlay);
-
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -77,16 +70,11 @@ public class NewsFragment extends Fragment {
             });
         }
 
-
         if (detailsViewModel.getNews() == null || detailsViewModel.getNews().isEmpty()) {
             getNews();
         }
-
-
-
         return tempview;
     }
-
 
     private void getNews() {
         // in ein logik viewmodel tuen und ergebniss sind ExtendedNews List -> zu news list machen und anzeigen
@@ -102,33 +90,28 @@ public class NewsFragment extends Fragment {
             public void onSuccess(ExtendedNews response) {
 
                 news.add(response);
-
                 httpViewModel.requestSpaceNews(new HttpListener<List<ExtendedNews>>() {
+
                     @Override
                     public void onSuccess(List<ExtendedNews> response) {
-
                         for (ExtendedNews extendedNews : response) {
                             if (!news.contains(extendedNews)) {
                                 news.add(extendedNews);
                             }
                         }
 
-
                         httpViewModel.requestSpaceTodaysNews(new HttpListener<List<ExtendedNews>>() {
                             @Override
                             public void onSuccess(List<ExtendedNews> response) {
-
                                 for (ExtendedNews extendedNews : response) {
                                     if (!news.contains(extendedNews)) {
                                         news.add(extendedNews);
                                     }
                                 }
 
-
                                 httpViewModel.requestSpaceDayArticles(new HttpListener<List<ExtendedNews>>() {
                                     @Override
                                     public void onSuccess(List<ExtendedNews> response) {
-
                                         for (ExtendedNews extendedNews : response) {
                                             if (!news.contains(extendedNews)) {
                                                 news.add(extendedNews);
@@ -136,49 +119,36 @@ public class NewsFragment extends Fragment {
                                         }
 
                                         postToViewModel(news, detailsViewModel, newsViewModel);
-
                                         loadingOverlay.setVisibility(View.INVISIBLE);
-
                                     }
-
                                     @Override
                                     public void onError(String error) {
                                         Log.e("requestSpaceDayArticles", "requestSpaceDayArticles: " + ((error == null) ? "null" : error));
                                     }
                                 });
-
                             }
-
                             @Override
                             public void onError(String error) {
                                 Log.e("requestSpaceTodaysNews", "requestSpaceTodaysNews: " + ((error == null) ? "null" : error));
                             }
                         });
                     }
-
                     @Override
                     public void onError(String error) {
                         Log.e("requestSpaceNews", "requestSpaceNews: " + ((error == null) ? "null" : error));
                     }
                 });
             }
-
             @Override
             public void onError(String error) {
                 Log.e("requestDailyInfos", "requestDailyInfos: " + ((error == null) ? "null" : error));
             }
         });
-
-
         loadingOverlay.setVisibility(View.VISIBLE);
-
-
     }
 
     private void postToViewModel(List<ExtendedNews> news, DetailsViewModel detailsViewModel, NewsViewModel newsViewModel) {
         detailsViewModel.setNews(news);
-
         newsViewModel.addAll(news);
-
     }
 }

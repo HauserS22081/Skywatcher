@@ -3,8 +3,6 @@ package net.htlgkr.skywatcher.news;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import net.htlgkr.skywatcher.http.ExtendedNews;
-
 import java.util.ArrayList;
 import java.util.List;
 

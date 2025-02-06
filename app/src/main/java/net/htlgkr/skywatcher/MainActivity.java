@@ -17,8 +17,12 @@ import androidx.lifecycle.ViewModelProvider;
 import net.htlgkr.skywatcher.databinding.ActivityMainBinding;
 import net.htlgkr.skywatcher.details.DetailsFragment;
 import net.htlgkr.skywatcher.details.DetailsViewModel;
+import net.htlgkr.skywatcher.http.HttpViewModel;
 import net.htlgkr.skywatcher.news.NewsFragment;
 import net.htlgkr.skywatcher.news.NewsViewModel;
+import net.htlgkr.skywatcher.skyobjectlist.SkyObjectDataViewModel;
+import net.htlgkr.skywatcher.skyobjectlist.SkyObjectFragment;
+import net.htlgkr.skywatcher.skyobjectlist.SkyObjectViewModel;
 import net.htlgkr.skywatcher.start.StartFragment;
 import net.htlgkr.skywatcher.viewthesky.ViewTheSkyFragment;
 
@@ -47,7 +51,9 @@ public class MainActivity extends AppCompatActivity {
 
         MainViewModel mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         NewsViewModel newsViewModel = new ViewModelProvider(this).get(NewsViewModel.class);
+        SkyObjectViewModel skyObjectViewModel = new ViewModelProvider(this).get(SkyObjectViewModel.class);
         DetailsViewModel detailsViewModel = new ViewModelProvider(this).get(DetailsViewModel.class);
+        SkyObjectDataViewModel skyObjectDataViewModel = new ViewModelProvider(this).get(SkyObjectDataViewModel.class);
         HttpViewModel httpViewModel = new ViewModelProvider(this).get(HttpViewModel.class);
         httpViewModel.init(getApplicationContext());
 
@@ -77,6 +83,11 @@ public class MainActivity extends AppCompatActivity {
                 case MainViewModel.DETAILS: {
                     fragmentTransaction.replace(R.id.main, new DetailsFragment(), "DETAILS FRAGMENT");
                     fragmentTransaction.addToBackStack("AND NEWS TO BACKSTACK");
+                    break;
+                }
+                case MainViewModel.PLANETLIST: {
+                    fragmentTransaction.replace(R.id.main, new SkyObjectFragment(), "");
+                    fragmentTransaction.addToBackStack("");
                 }
 
             }

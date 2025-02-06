@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.legacy.support.v4)
     implementation(libs.recyclerview)
     implementation(libs.volley)
+    implementation("com.google.android.material:material:1.12.0")
 
 //    implementation(libs.sceneform.ux)
 //

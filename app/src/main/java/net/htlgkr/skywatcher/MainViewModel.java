@@ -9,6 +9,7 @@ public class MainViewModel extends ViewModel {
     public static final int NEWS = 1;
     public static final int VIEWTHESKY = 2;
     public static final int DETAILS = 3;
+    public static final int PLANETLIST = 4;
 
     private MutableLiveData<Integer> _state = new MutableLiveData<>(START);
     public LiveData<Integer> state = _state;
@@ -27,5 +28,9 @@ public class MainViewModel extends ViewModel {
 
     public void showDetails() {
         _state.postValue(DETAILS);
+    }
+
+    public void showPlanetList() {
+        _state.postValue(PLANETLIST);
     }
 }

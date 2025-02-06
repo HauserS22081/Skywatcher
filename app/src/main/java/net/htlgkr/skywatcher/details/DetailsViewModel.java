@@ -2,7 +2,7 @@ package net.htlgkr.skywatcher.details;
 
 import androidx.lifecycle.ViewModel;
 
-import net.htlgkr.skywatcher.http.ExtendedNews;
+import net.htlgkr.skywatcher.news.ExtendedNews;
 
 import java.util.List;
 

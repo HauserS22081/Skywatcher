@@ -1,4 +1,4 @@
-package net.htlgkr.skywatcher;
+package net.htlgkr.skywatcher.http;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,9 +16,15 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import net.htlgkr.skywatcher.http.ExtendedNews;
+import net.htlgkr.skywatcher.R;
+import net.htlgkr.skywatcher.http.deserializer.SkyObjectDeserializer;
+import net.htlgkr.skywatcher.news.ExtendedNews;
 import net.htlgkr.skywatcher.http.deserializer.NasaDeserializer;
+import net.htlgkr.skywatcher.skyobjectlist.SkyObject;
 import net.htlgkr.skywatcher.viewthesky.Planet;
 
 import org.json.JSONArray;
@@ -283,13 +289,11 @@ public class HttpViewModel extends ViewModel {
     private List<Planet> getPlanets(JSONObject response) {
         List<Planet> planets = new ArrayList<>();
         try {
-            // Die Daten zu den Himmelskörpern befinden sich im "bodies"-Array
             JSONArray bodies = response.getJSONArray("bodies");
 
             for (int i = 0; i < bodies.length(); i++) {
                 JSONObject body = bodies.getJSONObject(i);
 
-                // Wir interessieren uns nur für Planeten
                 if (body.optBoolean("isPlanet", false)) {
                     String name = body.optString("englishName", "Unbekannt");
 
@@ -299,15 +303,8 @@ public class HttpViewModel extends ViewModel {
                     }
 
 
-
-
-//                    double latitude = body.optDouble("latitude", 0.0); // Standardwert 0.0
-//                    double longitude = body.optDouble("longitude", 0.0); // Standardwert 0.0
-//                    double altitude = body.optDouble("altitude", 0.0); // Standardwert 0.0
-
                     Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), PLANETPNGS[idx]);
 
-                    // Extrahiere neue Daten aus der API
                     double semiMajorAxis = body.optDouble("semimajorAxis", 0.0);
                     double eccentricity = body.optDouble("eccentricity", 0.0);
                     double inclination = body.optDouble("inclination", 0.0);
@@ -315,16 +312,12 @@ public class HttpViewModel extends ViewModel {
                     double argPeriapsis = body.optDouble("argPeriapsis", 0.0);
                     double mainAnomaly = body.optDouble("mainAnomaly", 0.0);
 
-                    // Erstelle den Planeten mit dem neuen Konstruktor
-                    // String name, Bitmap bitmap, double mainAnomaly, double eccentricity,
-                    // double inclination, double longAscNode, double argPeriapsis, double semiMajorAxis
 
                     Planet planet = new Planet(
                             name, bitmap, mainAnomaly, eccentricity, inclination, longAscNode,
                             argPeriapsis, semiMajorAxis
                     );
 
-                    // Füge den Planeten zur Liste hinzu
                     planets.add(planet);
                 }
             }
@@ -342,6 +335,77 @@ public class HttpViewModel extends ViewModel {
         }
         return -1;
 
+    }
+
+
+
+
+    // SkyObjectList
+//    public void requestPlanetInfo(HttpListener<List<SkyObject>> listener) {
+//        String url = "https://api.le-systeme-solaire.net/rest/bodies/mars"; // You can replace "mars" with any planet ID.
+//
+//        // Request a string response from the provided URL.
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//
+//                        Gson gson = new GsonBuilder()
+//                                .registerTypeAdapter(SkyObject.class, new SkyObjectDeserializer())
+//                                .create();
+//
+//                        SkyObject skyObject = gson.fromJson(response, SkyObject.class);
+//
+//                        listener.onSuccess(skyObject);
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                listener.onError(error.getMessage());
+//            }
+//        });
+//        queue.add(stringRequest);
+//    }
+
+    public void requestPlanetInfo(HttpListener<ArrayList<SkyObject>> listener) {
+        String url = "https://api.le-systeme-solaire.net/rest/bodies"; // Endpoint to fetch all bodies including planets
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            Gson gson = new GsonBuilder()
+                                    .registerTypeAdapter(SkyObject.class, new SkyObjectDeserializer())
+                                    .create();
+
+                            JsonObject jsonResponse = gson.fromJson(response, JsonObject.class);
+                            JsonArray bodies = jsonResponse.getAsJsonArray("bodies");
+
+                            ArrayList<SkyObject> skyObjects = new ArrayList<>();
+
+                            for (JsonElement bodyElement : bodies) {
+                                SkyObject skyObject = gson.fromJson(bodyElement, SkyObject.class);
+                                if (skyObject != null) {
+                                    skyObjects.add(skyObject);
+                                }
+                            }
+
+                            listener.onSuccess(skyObjects);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            listener.onError(e.getMessage());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onError(error.getMessage());
+            }
+        });
+        queue.add(stringRequest);
     }
 
 

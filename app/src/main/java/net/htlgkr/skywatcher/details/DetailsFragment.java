@@ -9,10 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import net.htlgkr.skywatcher.MainViewModel;
-import net.htlgkr.skywatcher.R;
 import net.htlgkr.skywatcher.databinding.FragmentDetailsBinding;
-import net.htlgkr.skywatcher.http.ExtendedNews;
+import net.htlgkr.skywatcher.news.ExtendedNews;
 
 public class DetailsFragment extends Fragment {
 

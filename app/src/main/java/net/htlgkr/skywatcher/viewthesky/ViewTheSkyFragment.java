@@ -10,8 +10,8 @@ import android.widget.FrameLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import net.htlgkr.skywatcher.HttpListener;
-import net.htlgkr.skywatcher.HttpViewModel;
+import net.htlgkr.skywatcher.http.HttpListener;
+import net.htlgkr.skywatcher.http.HttpViewModel;
 import net.htlgkr.skywatcher.databinding.FragmentViewTheSkyBinding;
 import net.htlgkr.skywatcher.viewthesky.helper.DeviceLocationHelper;
 import net.htlgkr.skywatcher.viewthesky.helper.DeviceOrientationHelper;

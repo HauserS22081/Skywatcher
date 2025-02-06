@@ -7,15 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import net.htlgkr.skywatcher.MyOnItemClickListener;
 import net.htlgkr.skywatcher.databinding.FragmentItemBinding;
-import net.htlgkr.skywatcher.http.ExtendedNews;
 
 import java.util.List;
 
 public class MyNewsRecyclerViewAdapter extends RecyclerView.Adapter<MyNewsRecyclerViewAdapter.ViewHolder> {
 
     private final List<ExtendedNews> values;
-    private MyOnNewsClickListener onNewsClickListener;
+    private MyOnItemClickListener onNewsClickListener;
 
     public MyNewsRecyclerViewAdapter(List<ExtendedNews> items) {
         values = items;
@@ -23,9 +23,7 @@ public class MyNewsRecyclerViewAdapter extends RecyclerView.Adapter<MyNewsRecycl
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         return new ViewHolder(FragmentItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
-
     }
 
     @Override
@@ -40,7 +38,7 @@ public class MyNewsRecyclerViewAdapter extends RecyclerView.Adapter<MyNewsRecycl
         return values.size();
     }
 
-    public void setOnNewsClickListener(MyOnNewsClickListener onNewsClickListener) {
+    public void setOnNewsClickListener(MyOnItemClickListener onNewsClickListener) {
         this.onNewsClickListener = onNewsClickListener;
     }
 
@@ -62,7 +60,6 @@ public class MyNewsRecyclerViewAdapter extends RecyclerView.Adapter<MyNewsRecycl
 
         @Override
         public void onClick(View view) {
-            // funktioniert nicht wegen cardview
             onNewsClickListener.onNewsClick(getLayoutPosition());
         }
     }
