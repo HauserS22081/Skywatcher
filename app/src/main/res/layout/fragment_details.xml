@@ -122,15 +122,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Description"
+                        android:text="Description hjkhiuhhztdtzdfghuftrdfghjkgzfdfcgvhbjnjhihijtfzghjktzghvnbzughjjkhhjkhjgftzfk"
                         android:textAlignment="center"
                         android:textAppearance="?attr/textAppearanceListItem"
                         android:textColor="@color/md_theme_onPrimary"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="4dp"/>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </ScrollView>
-
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

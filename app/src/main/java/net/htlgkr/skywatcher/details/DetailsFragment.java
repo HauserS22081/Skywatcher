@@ -39,7 +39,6 @@ public class DetailsFragment extends Fragment {
             binding.tvTitle.setText(currentNews.getTitle());
             binding.tvSubtitle.setText(currentNews.getSubtitle());
             binding.tvDescription.setText(currentNews.getDescription());
-            binding.tvDescription.setLineSpacing(0, 0.9f);
 
         }
 

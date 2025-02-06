@@ -22,8 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Name: "
-            android:textColor="@color/md_theme_onPrimary"
-            android:textColorLink="@color/md_theme_onPrimary"
+            android:textColor="#ffffffff"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -32,8 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Moon count: "
-            android:textColor="@color/md_theme_onPrimary"
-            android:textColorLink="@color/md_theme_onPrimary"
+            android:textColor="#ffffffff"
             android:textSize="18sp" />
 
         <TextView
@@ -41,8 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Gravity: "
-            android:textColor="@color/md_theme_onPrimary"
-            android:textColorLink="@color/md_theme_onPrimary"
+            android:textColor="#ffffffff"
             android:textSize="18sp" />
 
         <TextView
@@ -50,8 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Average Temperature: "
-            android:textColor="@color/md_theme_onPrimary"
-            android:textColorLink="@color/md_theme_onPrimary"
+            android:textColor="#ffffffff"
             android:textSize="18sp" />
 
     </LinearLayout>
