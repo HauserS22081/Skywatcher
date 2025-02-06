@@ -46,7 +46,7 @@ public class CanvasView extends View {
     public void drawPlanetsRollPitch(Canvas canvas) {
         for (Planet planet : visiblePlanets) {
 
-            Bitmap planetBitmap = planet.bitmap;
+            Bitmap planetBitmap = planet.getBitmap();
             if (planetBitmap != null) {
                 int planetSize = 100;
                 Bitmap scaledBitmap = Bitmap.createScaledBitmap(planetBitmap, planetSize, planetSize, true);

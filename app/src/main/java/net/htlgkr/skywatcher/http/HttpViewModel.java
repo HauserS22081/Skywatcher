@@ -38,14 +38,11 @@ import java.util.Map;
 
 
 public class HttpViewModel extends ViewModel {
-    private RequestQueue queue; // nur 1 mal initialisiert werden
+    private RequestQueue queue;
     private Context context;
     public static final String[] PLANETNAMES = new String[]{"Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"};
     public static final int[] PLANETPNGS = new int[]{R.drawable.mercury, R.drawable.venus, R.drawable.mars,
             R.drawable.jupiter, R.drawable.saturn, R.drawable.neptune, R.drawable.uranus};
-
-
-    // ladescreen damit nicht null
 
     public void init(Context context) {
         queue = Volley.newRequestQueue(context);
@@ -61,8 +58,6 @@ public class HttpViewModel extends ViewModel {
 
         url += apiKey;
 
-
-        // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -82,7 +77,6 @@ public class HttpViewModel extends ViewModel {
                 listener.onError(error.getMessage());
             }
         });
-        // Add the request to the RequestQueue.
         queue.add(stringRequest);
 
     }
@@ -95,33 +89,25 @@ public class HttpViewModel extends ViewModel {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            // JSON-Array aus der API-Antwort parsen
                             JSONArray jsonArray = new JSONArray(response);
-
-                            // Liste für ExtendedNews
                             List<ExtendedNews> newsList = new ArrayList<>();
 
-                            // Durch alle Elemente im JSON-Array iterieren
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                                // JSON-Felder extrahieren
                                 String title = jsonObject.optString("title", "No Title");
                                 String subtitle = jsonObject.optString("timestamp", "No Date");
                                 String description = jsonObject.optString("news_text", "No Summary");
 
-                                // Neues ExtendedNews-Objekt erstellen
                                 ExtendedNews news = new ExtendedNews(title, subtitle, description);
 
                                 // Zur Liste hinzufügen
                                 newsList.add(news);
                             }
 
-                            // Liste an den Listener übergeben
                             listener.onSuccess(newsList);
 
                         } catch (JSONException e) {
-                            // Fehler beim Parsen der JSON-Daten
                             listener.onError("JSON Parsing Error: " + e.getMessage());
                         }
                     }
@@ -141,7 +127,6 @@ public class HttpViewModel extends ViewModel {
             }
         };
 
-        // Anfrage zur Warteschlange hinzufügen
         queue.add(stringRequest);
     }
 
@@ -154,40 +139,31 @@ public class HttpViewModel extends ViewModel {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            // JSON-Array aus der API-Antwort parsen
                             JSONArray jsonArray = new JSONArray(response);
 
-                            // Liste für ExtendedNews
                             List<ExtendedNews> newsList = new ArrayList<>();
 
-                            // Durch alle Elemente im JSON-Array iterieren
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                                // JSON-Felder extrahieren
                                 String title = jsonObject.optString("title", "No Title");
                                 String subtitle = jsonObject.optString("timestamp", "No Date");
                                 String description = jsonObject.optString("news_text", "No Summary");
 
-                                // Neues ExtendedNews-Objekt erstellen
                                 ExtendedNews news = new ExtendedNews(title, subtitle, description);
 
-                                // Zur Liste hinzufügen
                                 newsList.add(news);
                             }
 
-                            // Liste an den Listener übergeben
                             listener.onSuccess(newsList);
 
                         } catch (JSONException e) {
-                            // Fehler beim Parsen der JSON-Daten
                             listener.onError("JSON Parsing Error: " + e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // Fehler an den Listener weitergeben
                 listener.onError(error.getMessage());
             }
         }) {
@@ -200,7 +176,6 @@ public class HttpViewModel extends ViewModel {
             }
         };
 
-        // Anfrage zur Warteschlange hinzufügen
         queue.add(stringRequest);
     }
 
@@ -214,33 +189,24 @@ public class HttpViewModel extends ViewModel {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            // JSON-Array aus der API-Antwort parsen
                             JSONArray jsonArray = new JSONArray(response);
-
-                            // Liste für ExtendedNews
                             List<ExtendedNews> newsList = new ArrayList<>();
 
-                            // Durch alle Elemente im JSON-Array iterieren
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                                // JSON-Felder extrahieren
                                 String title = jsonObject.optString("title", "No Title");
                                 String subtitle = jsonObject.optString("timestamp", "No Date");
                                 String description = jsonObject.optString("news_text", "No Summary");
 
-                                // Neues ExtendedNews-Objekt erstellen
                                 ExtendedNews news = new ExtendedNews(title, subtitle, description);
 
-                                // Zur Liste hinzufügen
                                 newsList.add(news);
                             }
 
-                            // Liste an den Listener übergeben
                             listener.onSuccess(newsList);
 
                         } catch (JSONException e) {
-                            // Fehler beim Parsen der JSON-Daten
                             listener.onError("JSON Parsing Error: " + e.getMessage());
                         }
                     }
@@ -260,12 +226,8 @@ public class HttpViewModel extends ViewModel {
             }
         };
 
-        // Anfrage zur Warteschlange hinzufügen
         queue.add(stringRequest);
     }
-
-
-
 
 
     // View The Sky
@@ -337,38 +299,8 @@ public class HttpViewModel extends ViewModel {
 
     }
 
-
-
-
-    // SkyObjectList
-//    public void requestPlanetInfo(HttpListener<List<SkyObject>> listener) {
-//        String url = "https://api.le-systeme-solaire.net/rest/bodies/mars"; // You can replace "mars" with any planet ID.
-//
-//        // Request a string response from the provided URL.
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//
-//                        Gson gson = new GsonBuilder()
-//                                .registerTypeAdapter(SkyObject.class, new SkyObjectDeserializer())
-//                                .create();
-//
-//                        SkyObject skyObject = gson.fromJson(response, SkyObject.class);
-//
-//                        listener.onSuccess(skyObject);
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                listener.onError(error.getMessage());
-//            }
-//        });
-//        queue.add(stringRequest);
-//    }
-
     public void requestPlanetInfo(HttpListener<ArrayList<SkyObject>> listener) {
-        String url = "https://api.le-systeme-solaire.net/rest/bodies"; // Endpoint to fetch all bodies including planets
+        String url = "https://api.le-systeme-solaire.net/rest/bodies";
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,

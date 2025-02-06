@@ -20,7 +20,6 @@ import net.htlgkr.skywatcher.http.HttpListener;
 import net.htlgkr.skywatcher.http.HttpViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class SkyObjectFragment extends Fragment {
@@ -50,7 +49,6 @@ public class SkyObjectFragment extends Fragment {
 
         View tempView = view.findViewById(R.id.rv_list);
 
-        // Set the adapter
         if (tempView instanceof RecyclerView) {
             Context context = tempView.getContext();
             RecyclerView recyclerView = (RecyclerView) tempView;

@@ -15,10 +15,6 @@ public class SkyObjectDataViewModel extends ViewModel {
         return skyObjects;
     }
 
-    public void setSkyObjects(ArrayList<SkyObject> skyObjects) {
-        this.skyObjects = skyObjects;
-    }
-
     public SkyObject getCurrentSkyObject() {
         return currentSkyObject;
     }

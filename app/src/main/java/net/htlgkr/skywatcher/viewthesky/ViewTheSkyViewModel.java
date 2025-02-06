@@ -78,7 +78,7 @@ public class ViewTheSkyViewModel extends ViewModel {
                 double relativeAzimuth = planet.getAzimuth() - centerAzimuth;
                 double relativeElevation = planet.getElevation() - centerElevation;
 
-                // Normalisiere Azimut-Offset (-180 bis 180)
+                // Normalisiere Azimut Offset (-180 bis 180)
                 while (relativeAzimuth > 180) relativeAzimuth -= 360;
                 while (relativeAzimuth < -180) relativeAzimuth += 360;
 

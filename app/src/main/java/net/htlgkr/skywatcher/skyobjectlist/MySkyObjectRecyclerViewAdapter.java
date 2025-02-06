@@ -33,7 +33,6 @@ public class MySkyObjectRecyclerViewAdapter extends RecyclerView.Adapter<MySkyOb
         holder.item = skyObjects.get(position);
         holder.ivImage.setImageResource(holder.item.getImage());
 
-        // Update layout parameters for explicit size changes
         ViewGroup.LayoutParams layoutParams = holder.ivImage.getLayoutParams();
         layoutParams.width = holder.item.getSize();
         layoutParams.height = holder.item.getSize();

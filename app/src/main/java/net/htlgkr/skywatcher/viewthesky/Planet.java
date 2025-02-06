@@ -4,29 +4,14 @@ import android.graphics.Bitmap;
 
 public class Planet {
 
-//    public final String name;
-//    public float azimuth;
-//    public float elevation;
-//    private double latitude;
-//    private double longitude;
-//    private double altitude;
-//    public final Bitmap bitmap;
-//
-//    private double semiMajorAxis;  // Semi-major axis in km
-//    private double eccentricity;   // Orbital eccentricity
-//    private double inclination;    // Orbital inclination in degrees
-//    private double longAscNode;    // Longitude of ascending node in degrees
-//    private double argPeriapsis;   // Argument of periapsis in degrees
-//    private double meanAnomaly;// Mean anomaly in degrees
-
-    private String name;
-    public final Bitmap bitmap;
-    private double mainAnomaly;
-    private double eccentricity;
-    private double inclination;
-    private double argPeriapsis;
-    private double longAscNode;
-    private double semiMajorAxis;
+    private final String name;
+    private final Bitmap bitmap;
+    private final double mainAnomaly;
+    private final double eccentricity;
+    private final double inclination;
+    private final double argPeriapsis;
+    private final double longAscNode;
+    private final double semiMajorAxis;
     private double ra;  // Right Ascension in degrees
     private double dec; // Declination in degrees
 
@@ -90,69 +75,28 @@ public class Planet {
         return name;
     }
 
-    public int getCanvasPositionX() {
-        return canvasPositionX;
-    }
-
-    public void setCanvasPositionX(int canvasPositionX) {
-        this.canvasPositionX = canvasPositionX;
-    }
-
-    public int getCanvasPositionY() {
-        return canvasPositionY;
-    }
-
-    public void setCanvasPositionY(int canvasPositionY) {
-        this.canvasPositionY = canvasPositionY;
-    }
-
-    // Getters and setters for all properties
     public double getMainAnomaly() {
         return mainAnomaly;
-    }
-
-    public void setMainAnomaly(double mainAnomaly) {
-        this.mainAnomaly = mainAnomaly;
     }
 
     public double getEccentricity() {
         return eccentricity;
     }
 
-    public void setEccentricity(double eccentricity) {
-        this.eccentricity = eccentricity;
-    }
-
     public double getInclination() {
         return inclination;
-    }
-
-    public void setInclination(double inclination) {
-        this.inclination = inclination;
     }
 
     public double getArgPeriapsis() {
         return argPeriapsis;
     }
 
-    public void setArgPeriapsis(double argPeriapsis) {
-        this.argPeriapsis = argPeriapsis;
-    }
-
     public double getLongAscNode() {
         return longAscNode;
     }
 
-    public void setLongAscNode(double longAscNode) {
-        this.longAscNode = longAscNode;
-    }
-
     public double getSemiMajorAxis() {
         return semiMajorAxis;
-    }
-
-    public void setSemiMajorAxis(double semiMajorAxis) {
-        this.semiMajorAxis = semiMajorAxis;
     }
 
     public double getRa() {

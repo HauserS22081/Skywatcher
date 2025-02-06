@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class ExtendedNews {
 
-    private String title;
-    private String subtitle;
-    private String description;
+    private final String title;
+    private final String subtitle;
+    private final String description;
 
     public ExtendedNews(String title, String subtitle, String description) {
         this.title = title;
@@ -18,24 +18,12 @@ public class ExtendedNews {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getSubtitle() {
         return subtitle;
     }
 
-    public void setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override

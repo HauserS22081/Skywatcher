@@ -49,7 +49,6 @@ public class NewsFragment extends Fragment {
         View view = tempview.findViewById(R.id.list);
         loadingOverlay = tempview.findViewById(R.id.fl_loadingOverlay);
 
-        // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
@@ -77,8 +76,6 @@ public class NewsFragment extends Fragment {
     }
 
     private void getNews() {
-        // in ein logik viewmodel tuen und ergebniss sind ExtendedNews List -> zu news list machen und anzeigen
-
         DetailsViewModel detailsViewModel = new ViewModelProvider(requireActivity()).get(DetailsViewModel.class);
         NewsViewModel newsViewModel = new ViewModelProvider(requireActivity()).get(NewsViewModel.class);
 

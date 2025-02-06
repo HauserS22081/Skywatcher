@@ -27,10 +27,6 @@ public class SkyObject {
         return size;
     }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
-
     public String getName() {
         return name;
     }
@@ -41,10 +37,6 @@ public class SkyObject {
 
     public int getImage() {
         return image;
-    }
-
-    public void setImage(int image) {
-        this.image = image;
     }
 
     public void setGravity(double gravity) {
@@ -66,7 +58,6 @@ public class SkyObject {
     public double getAvgTemp() {
         return avgTemp;
     }
-
 
     public int getMoonsCount() {
         return moonsCount;

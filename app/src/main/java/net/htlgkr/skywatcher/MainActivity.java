@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
         requestLocationPermission();
 
-
         MainViewModel mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         NewsViewModel newsViewModel = new ViewModelProvider(this).get(NewsViewModel.class);
         SkyObjectViewModel skyObjectViewModel = new ViewModelProvider(this).get(SkyObjectViewModel.class);
@@ -56,10 +55,6 @@ public class MainActivity extends AppCompatActivity {
         SkyObjectDataViewModel skyObjectDataViewModel = new ViewModelProvider(this).get(SkyObjectDataViewModel.class);
         HttpViewModel httpViewModel = new ViewModelProvider(this).get(HttpViewModel.class);
         httpViewModel.init(getApplicationContext());
-
-
-
-
 
 
         mainViewModel.state.observe(this, state -> {
