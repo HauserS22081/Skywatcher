@@ -18,8 +18,7 @@ public class SkyObjectDeserializer implements JsonDeserializer<SkyObject> {
 
         String name = jsonObject.get("englishName").getAsString();
         double gravity = jsonObject.get("gravity").getAsDouble();
-        double avgTemp = jsonObject.get("avgTemp").getAsDouble();
-        String bodyType = jsonObject.get("bodyType").getAsString();
+        double avgTemp = jsonObject.get("avgTemp").getAsDouble() - 273.15; // K -> C°
 
         JsonElement moonsElement = jsonObject.get("moons");
         int moonsCount = 0;

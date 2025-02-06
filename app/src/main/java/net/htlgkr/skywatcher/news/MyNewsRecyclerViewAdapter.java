@@ -60,7 +60,7 @@ public class MyNewsRecyclerViewAdapter extends RecyclerView.Adapter<MyNewsRecycl
 
         @Override
         public void onClick(View view) {
-            onNewsClickListener.onNewsClick(getLayoutPosition());
+            onNewsClickListener.onItemClicked(getLayoutPosition());
         }
     }
 }

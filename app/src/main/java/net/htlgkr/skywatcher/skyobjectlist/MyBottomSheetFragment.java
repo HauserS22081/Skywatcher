@@ -14,7 +14,7 @@ import net.htlgkr.skywatcher.databinding.FragmentBottomSheetBinding;
 
 public class MyBottomSheetFragment extends BottomSheetDialogFragment {
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         net.htlgkr.skywatcher.databinding.FragmentBottomSheetBinding binding = FragmentBottomSheetBinding.inflate(inflater, container, false);
@@ -24,8 +24,8 @@ public class MyBottomSheetFragment extends BottomSheetDialogFragment {
 
         binding.tvName.setText("Name: " + skyObject.getName());
         binding.tvMoonCount.setText("Moon Count: " + skyObject.getMoonsCount());
-        binding.tvAvgTemp.setText("Average Tempertature: " + skyObject.getAvgTemp());
-        binding.tvGravity.setText("Gravity: " + skyObject.getGravity());
+        binding.tvAvgTemp.setText(String.format("Average Tempertature: %.2f °C", skyObject.getAvgTemp()));
+        binding.tvGravity.setText(String.format("Gravity: %.2f",skyObject.getGravity()));
 
         return binding.getRoot();
     }

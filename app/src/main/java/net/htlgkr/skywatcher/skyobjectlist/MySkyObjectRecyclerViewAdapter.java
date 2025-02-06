@@ -1,10 +1,7 @@
 package net.htlgkr.skywatcher.skyobjectlist;
 
-import static java.security.AccessController.getContext;
-
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +58,7 @@ public class MySkyObjectRecyclerViewAdapter extends RecyclerView.Adapter<MySkyOb
         public ViewHolder(FragmentSkyObjectBinding binding) {
             super(binding.getRoot());
             ivImage = binding.ivImage;
+            binding.ivImage.setOnClickListener(this);
         }
 
         @Override
@@ -70,7 +68,7 @@ public class MySkyObjectRecyclerViewAdapter extends RecyclerView.Adapter<MySkyOb
 
         @Override
         public void onClick(View v) {
-
+            onItemClickListener.onItemClicked(getLayoutPosition());
         }
     }
 }

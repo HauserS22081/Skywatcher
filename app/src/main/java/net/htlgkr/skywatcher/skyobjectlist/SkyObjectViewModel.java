@@ -1,7 +1,5 @@
 package net.htlgkr.skywatcher.skyobjectlist;
 
-import android.util.Log;
-
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -16,15 +14,9 @@ public class SkyObjectViewModel extends ViewModel {
         skyObjects = new ArrayList<>();
     }
 
-    public void add(SkyObject skyObject) {
-        skyObjects.add(skyObject);
-        observableSkyObject.postValue(skyObjects);
-    }
-
     public void addAll(ArrayList<SkyObject> skyObjects) {
         this.skyObjects = new ArrayList<>();
         this.skyObjects.addAll(skyObjects);
-
         observableSkyObject.postValue(this.skyObjects);
     }
 }

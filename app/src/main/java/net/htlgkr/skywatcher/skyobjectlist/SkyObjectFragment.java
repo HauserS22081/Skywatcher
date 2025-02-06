@@ -48,11 +48,12 @@ public class SkyObjectFragment extends Fragment {
 
         loadingOverlay = view.findViewById(R.id.fl_loadingOverlay);
 
-        RecyclerView recyclerView = view.findViewById(R.id.rv_list);
+        View tempView = view.findViewById(R.id.rv_list);
 
         // Set the adapter
-        if (recyclerView instanceof RecyclerView) {
-            Context context = recyclerView.getContext();
+        if (tempView instanceof RecyclerView) {
+            Context context = tempView.getContext();
+            RecyclerView recyclerView = (RecyclerView) tempView;
             if (columnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -67,6 +68,7 @@ public class SkyObjectFragment extends Fragment {
                 recyclerView.setAdapter(adapter);
 
                 adapter.setOnItemClickListener(position -> {
+                    assert items != null;
                     SkyObject skyObject = items.get(position);
 
                     if ("Sun".equalsIgnoreCase(skyObject.getName())) {
@@ -81,9 +83,6 @@ public class SkyObjectFragment extends Fragment {
 
         skyObjectDataViewModel.addValues();
         getAndMergeData();
-//        ArrayList<SkyObject> skyObjects = skyObjectDataViewModel.getSkyObjects();
-//        viewModel.addAll(skyObjects);
-
         loadingOverlay.setVisibility(View.VISIBLE);
 
         return view;
